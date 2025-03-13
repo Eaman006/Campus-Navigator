@@ -17,7 +17,7 @@ const page = () => {
         />
       </div>
       <div className='w-full absolute top-[15%] px-32'>
-        <div className='bg-white rounded-lg px-14 w-1/2 mx-auto my-5 py-5'>
+        <div className='bg-[#F8F9FA] rounded-lg px-14 w-1/2 mx-auto my-5 py-5'>
           <div className='flex justify-center items-center'>
             <Image src="/logo.png" width={100} height={100} alt='logo' />
           </div>
