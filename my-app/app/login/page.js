@@ -16,12 +16,12 @@ const page = () => {
           className="w-full h-[50vh] object-fill"
         />
       </div>
-      <div className='w-full absolute top-[15%] px-2'>
+      <div className='w-full absolute top-[15%] px-14'>
         <div className='bg-white rounded-lg px-7 w-1/2 mx-auto my-5 py-5'>
           <div className='flex justify-center items-center'>
             <Image src="/logo.png" width={100} height={100} alt='logo' />
           </div>
-          <div className='font-bold text-black text-5xl text-center mx-2'>
+          <div className='font-bold text-black text-5xl text-center mx-2 mt-4'>
             Campus Navigator
           </div>
           <div className='font-bold text-black text-2xl text-center'>
