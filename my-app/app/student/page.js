@@ -15,10 +15,64 @@ const Page = () => {
   const [userPhoto, setUserPhoto] = useState(null);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
+    const handleLoad = () => {
+      setIsLoading(false);
+    };
+
+    const initializeMediaLoading = () => {
+      const video = document.querySelector('video');
+      const images = Array.from(document.querySelectorAll('Image'));
+      const mediaElements = [video, ...images];
+      let loadedCount = 0;
+
+      mediaElements.forEach((media) => {
+        if (!media) return;
+        
+        if (media.complete || media.readyState >= 3) {
+          loadedCount++;
+        } else {
+          media.addEventListener('loadeddata', () => {
+            loadedCount++;
+            if (loadedCount === mediaElements.length) handleLoad();
+          });
+          media.addEventListener('load', () => {
+            loadedCount++;
+            if (loadedCount === mediaElements.length) handleLoad();
+          });
+        }
+      });
+
+      if (loadedCount === mediaElements.length) handleLoad();
+    };
+
+    // Initialize media loading
+    initializeMediaLoading();
+
     console.log("Checking authentication state...");
+    
+    // Handle tab/window close
+    const handleBeforeUnload = (e) => {
+      e.preventDefault();
+      e.returnValue = '';
+      
+      if (auth.currentUser) {
+        // Synchronous signout
+        try {
+          indexedDB.deleteDatabase('firebaseLocalStorageDb');
+          localStorage.clear();
+          sessionStorage.clear();
+        } catch (error) {
+          console.error('Error clearing storage:', error);
+        }
+      }
+    };
+
+    // Add event listener for tab/window close
+    window.addEventListener('beforeunload', handleBeforeUnload);
     
     // Check if user is authenticated, if not redirect to login
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -52,7 +106,11 @@ const Page = () => {
       }
     });
 
-    return () => unsubscribe();
+    // Cleanup function
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      unsubscribe();
+    };
   }, [router]);
 
   // Show loading state

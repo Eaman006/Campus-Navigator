@@ -15,28 +15,54 @@ const Page = () => {
       setIsLoading(false);
     };
 
-    const video = document.querySelector('video');
-    const images = Array.from(document.querySelectorAll('Image'));
+    const initializeMediaLoading = () => {
+      const video = document.querySelector('video');
+      const images = Array.from(document.querySelectorAll('Image'));
+      const mediaElements = [video, ...images];
+      let loadedCount = 0;
 
-    const mediaElements = [video, ...images];
-    let loadedCount = 0;
+      mediaElements.forEach((media) => {
+        if (!media) return;
+        
+        if (media.complete || media.readyState >= 3) {
+          loadedCount++;
+        } else {
+          media.addEventListener('loadeddata', () => {
+            loadedCount++;
+            if (loadedCount === mediaElements.length) handleLoad();
+          });
+          media.addEventListener('load', () => {
+            loadedCount++;
+            if (loadedCount === mediaElements.length) handleLoad();
+          });
+        }
+      });
 
-    mediaElements.forEach((media) => {
-      if (media.complete || media.readyState >= 3) {
-        loadedCount++;
-      } else {
-        media.addEventListener('loadeddata', () => {
-          loadedCount++;
-          if (loadedCount === mediaElements.length) handleLoad();
-        });
-        media.addEventListener('load', () => {
-          loadedCount++;
-          if (loadedCount === mediaElements.length) handleLoad();
-        });
+      if (loadedCount === mediaElements.length) handleLoad();
+    };
+
+    // Initialize media loading
+    initializeMediaLoading();
+
+    // Handle tab/window close
+    const handleBeforeUnload = (e) => {
+      e.preventDefault();
+      e.returnValue = '';
+      
+      if (auth.currentUser) {
+        // Synchronous signout
+        try {
+          indexedDB.deleteDatabase('firebaseLocalStorageDb');
+          localStorage.clear();
+          sessionStorage.clear();
+        } catch (error) {
+          console.error('Error clearing storage:', error);
+        }
       }
-    });
+    };
 
-    if (loadedCount === mediaElements.length) handleLoad();
+    // Add event listener for tab/window close
+    window.addEventListener('beforeunload', handleBeforeUnload);
 
     // Check if user is already logged in
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -51,7 +77,11 @@ const Page = () => {
       }
     });
 
-    return () => unsubscribe();
+    // Cleanup function
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      unsubscribe();
+    };
   }, [router]);
 
   // Handle Google Sign In
