@@ -2,11 +2,12 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { auth, googleProvider } from "@/lib/firebase";
-import { signInWithEmailAndPassword, signInWithPopup, onAuthStateChanged } from "firebase/auth";
+import { signInWithEmailAndPassword, signInWithPopup, onAuthStateChanged, signOut } from "firebase/auth";
 import { useRouter } from "next/navigation";
 
 const Page = () => {
   const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState('');
   const router = useRouter();
 
   useEffect(() => {
@@ -38,21 +39,44 @@ const Page = () => {
     if (loadedCount === mediaElements.length) handleLoad();
 
     // Check if user is already logged in
-    onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        router.push("/student"); // Redirect to dashboard if logged in
+        // Check if the logged-in user has the correct email domain
+        if (!user.email.endsWith('@vitbhopal.ac.in')) {
+          await signOut(auth);
+          setErrorMessage('Access restricted. Only @vitbhopal.ac.in email addresses are allowed.');
+          return;
+        }
+        router.push("/student"); // Redirect to dashboard if logged in with correct domain
       }
     });
+
+    return () => unsubscribe();
   }, [router]);
 
   // Handle Google Sign In
   const handleGoogleSignIn = async () => {
     try {
+      setErrorMessage(''); // Clear any existing error messages
       const result = await signInWithPopup(auth, googleProvider);
+      const userEmail = result.user.email;
+      
+      if (!userEmail.endsWith('@vitbhopal.ac.in')) {
+        // Sign out the user if email is not from vitbhopal.ac.in
+        await signOut(auth);
+        setErrorMessage('Access restricted. Only @vitbhopal.ac.in email addresses are allowed.');
+        return;
+      }
+      
       console.log("User signed in:", result.user);
       router.push("/student"); // Redirect to dashboard after successful login
     } catch (error) {
       console.error("Error during sign in:", error.message);
+      if (error.code === 'auth/popup-closed-by-user') {
+        setErrorMessage('Sign-in cancelled by user.');
+      } else {
+        setErrorMessage(error.message);
+      }
     }
   };
 
@@ -116,6 +140,11 @@ const Page = () => {
                 <Image src="/google.png" width={70} height={70} alt='google' />
               </div>
             </div>
+            {errorMessage && (
+              <div className='text-red-600 text-center mt-3 font-semibold'>
+                {errorMessage}
+              </div>
+            )}
           </div>
         </div>
       </div>
