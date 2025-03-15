@@ -1,10 +1,14 @@
 "use client"
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { auth, googleProvider } from "@/lib/firebase";
+import { signInWithEmailAndPassword, signInWithPopup, onAuthStateChanged } from "firebase/auth";
+import { useRouter } from "next/navigation";
 
 const Page = () => {
   const [isLoading, setIsLoading] = useState(true);
-  
+  const router = useRouter();
+
   useEffect(() => {
     const handleLoad = () => {
       setIsLoading(false);
@@ -32,7 +36,25 @@ const Page = () => {
     });
 
     if (loadedCount === mediaElements.length) handleLoad();
-  }, []);
+
+    // Check if user is already logged in
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        router.push("/student"); // Redirect to dashboard if logged in
+      }
+    });
+  }, [router]);
+
+  // Handle Google Sign In
+  const handleGoogleSignIn = async () => {
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      console.log("User signed in:", result.user);
+      router.push("/student"); // Redirect to dashboard after successful login
+    } catch (error) {
+      console.error("Error during sign in:", error.message);
+    }
+  };
 
   return (
     <div className="relative w-full h-screen">
@@ -65,7 +87,7 @@ const Page = () => {
             <div className='font-bold text-black text-2xl text-center'>
               by VIT for VIT
             </div>
-            <div className='bg-[#007BFF] text-white flex my-7 p-2 rounded-lg mx-2'>
+            <div className='bg-[#007BFF] text-white flex my-7 p-2 rounded-lg mx-2 cursor-pointer'>
               <div className='w-4/5'>
                 <div className='text-3xl font-bold mx-5 mt-1'>
                   Explore as Guest
@@ -77,9 +99,11 @@ const Page = () => {
               <div>
                 <Image src="/profile.png" width={70} height={70} alt='profile' />
               </div>
-
             </div>
-            <div className='bg-[#007BFF] text-white flex my-3 p-2 rounded-lg mx-2'>
+            <div 
+              className='bg-[#007BFF] text-white flex my-3 p-2 rounded-lg mx-2 cursor-pointer'
+              onClick={handleGoogleSignIn}
+            >
               <div className='w-4/5'>
                 <div className='text-3xl font-bold mx-5 mt-1'>
                   Sign in with Google
@@ -100,4 +124,3 @@ const Page = () => {
 };
 
 export default Page;
-
