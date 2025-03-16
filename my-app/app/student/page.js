@@ -29,15 +29,15 @@ function Page() {
         <div className={style['container-left-top']}>
 
           <div className={[style['hamburger-container'], isOpen ? (style.open) : (style.close)].join(' ')}>
-            <div className='flex justify-between items-center'>
+            <div className='flex justify-between items-center border-b-2'>
               <p className='inline-block font-bold text-2xl'>Campus Navigator</p>
               <span onClick={handleOpen} className='cursor-pointer hover:scale-115 duration-300 inline-block'>✖️</span>
             </div>
-            <div className='w-70 mt-4'>Home</div>
-            <div className='w-full mt-4 relative'>Academic Block <span className='absolute right-0'>🔽</span></div>
-            <div className='w-full mt-4 relative'>Academic Block 2 <span className='absolute right-0'>🔽</span></div>
-            <div className='w-full mt-4 relative'>Architecture Building <span className='absolute right-0'>🔽</span></div>
-            <div className='w-full mt-4 relative'>Lab Complex <span className='absolute right-0'>🔽</span></div>
+            <div className='w-full mt-8 cursor-pointer '>Home</div>
+            <div className='w-full mt-4 relative cursor-pointer'>Academic Block <span className='absolute right-0'>🔽</span></div>
+            <div className='w-full mt-4 relative cursor-pointer'>Academic Block 2 <span className='absolute right-0'>🔽</span></div>
+            <div className='w-full mt-4 relative cursor-pointer'>Architecture Building <span className='absolute right-0'>🔽</span></div>
+            <div className='w-full mt-4 relative cursor-pointer '>Lab Complex <span className='absolute right-0'>🔽</span></div>
           </div>
 
           <Image src={Hamburger} width={50} height={50} alt='logo' className='pb-10 pt-6 cursor-pointer hover:scale-115 duration-300' onClick={handleOpen} />
