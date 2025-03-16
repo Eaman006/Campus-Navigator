@@ -2,7 +2,6 @@
 import React, { useRef, useState, useEffect } from 'react'
 import style from './Student.module.css'
 import Image from 'next/image';
-import Bot from '../../public/bot.png'
 import Recent from '../../public/recent.png'
 import Hamburger from '../../public/hamburger.png'
 import Direction from '../../public/direction.png'
@@ -10,6 +9,13 @@ import Search from '../../public/search.png'
 import { auth } from "@/lib/firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { useRouter } from 'next/navigation';
+import { Montserrat } from "next/font/google";
+
+const montserrat = Montserrat({
+  subsets: ["latin"], 
+  weight: ["100", "400", "700"], 
+  variable: "--font-montserrat", 
+});
 
 function Page() {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,6 +26,8 @@ function Page() {
   const [endFloorMap, setEndFloorMap] = useState("");
   const [loading, setLoading] = useState(false);
   const [showStartMap, setShowStartMap] = useState(true);
+  const [start, setStart] = useState("");
+  const [end, setEnd] = useState("");
   const mapRef = useRef(null);
   const inputRef = useRef(null);
   const router = useRouter();
@@ -126,8 +134,6 @@ function Page() {
     }
   };
 
-  const [start, setStart] = useState("");
-  const [end, setEnd] = useState("");
 
   const swapFloors = () => {
     setStart(end);
@@ -290,25 +296,23 @@ function Page() {
 
         <div className={style['container-left']}>
           <div className={style['container-left-top']}>
-            <div className={[style['hamburger-container'], isOpen ? (style.open) : (style.close)].join(' ')}>
+            <div className={[style['hamburger-container'], isOpen ? (style.open) : (style.close), montserrat.variable].join(' ')}>
               <div className='flex justify-between items-center border-b-2'>
                 <p className='inline-block font-bold text-2xl'>Campus Navigator</p>
-                <span onClick={handleOpen} className='cursor-pointer hover:scale-115 duration-300 inline-block'>✖️</span>
+                <span onClick={handleOpen} className='cursor-pointer hover:scale-115 duration-300 inline-block'><Image src='/Close.png' width={30} height={30} alt='close'/></span>
               </div>
-              <div className='w-full mt-8 cursor-pointer '>Home</div>
-              <div className='w-full mt-4 relative cursor-pointer'>Academic Block <span className='absolute right-0'>🔽</span></div>
-              <div className='w-full mt-4 relative cursor-pointer'>Academic Block 2 <span className='absolute right-0'>🔽</span></div>
-              <div className='w-full mt-4 relative cursor-pointer'>Architecture Building <span className='absolute right-0'>🔽</span></div>
-              <div className='w-full mt-4 relative cursor-pointer '>Lab Complex <span className='absolute right-0'>🔽</span></div>
+              <div className='w-full mt-8 cursor-pointer flex items-center'><span><Image src='/Home.png' width={30} height={30} alt='🔽'/></span> Home</div>
+              <div className='w-full mt-4 relative cursor-pointer flex items-center'><span><Image src='/block.png' width={20} height={20} alt='🔽'/></span> <span>&nbsp;</span> Academic Block <span className='absolute right-0'><Image src='/downArrow.png' width={30} height={30} alt='🔽'/></span></div>
+              <div className='w-full mt-4 relative cursor-pointer flex items-center'><span><Image src='/block.png' width={20} height={20} alt='🔽'/></span> <span>&nbsp;</span> Academic Block 2 <span className='absolute right-0'><Image src='/downArrow.png' width={30} height={30} alt='🔽'/></span></div>
+              <div className='w-full mt-4 relative cursor-pointer flex items-center'><span><Image src='/block.png' width={20} height={20} alt='🔽'/></span> <span>&nbsp;</span> Architecture Building <span className='absolute right-0'><Image src='/downArrow.png' width={30} height={30} alt='🔽'/></span></div>
+              <div className='w-full mt-4 relative cursor-pointer flex items-center'><span><Image src='/block.png' width={20} height={20} alt='🔽'/></span> <span>&nbsp;</span> Lab Complex <span className='absolute right-0'><Image src='/downArrow.png' width={30} height={30} alt='🔽'/></span></div>
             </div>
 
             <Image src={Hamburger} width={50} height={50} alt='logo' className='pb-10 pt-6 cursor-pointer hover:scale-115 duration-300' onClick={handleOpen} />
             <Image src={Recent} width={50} height={50} alt='logo' />
             <button onClick={handleSearchOpen} className='w-[50px] text-2xl cursor-pointer mt-10'>🔍</button>
           </div>
-          <div className={style['bot-container']}>
-            <Image src={Bot} width={50} height={50} alt='logo' />
-          </div>
+          
         </div>
         <div className={style['container-right']}>
           <div className={style['sub-container-right']}>
@@ -329,6 +333,10 @@ function Page() {
                 priority
               />
             </div>
+
+            <div className={style['bot-container']}>
+            <Image src='/Chatbot.png' width={45} height={45} alt='logo' />
+          </div>
           </div>
         </div>
       </div>
