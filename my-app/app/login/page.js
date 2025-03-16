@@ -9,11 +9,56 @@ const Page = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [isInitialized, setIsInitialized] = useState(false);
   const router = useRouter();
 
+  // Effect for authentication and initialization
   useEffect(() => {
+    let authInitialized = false;
+
+    // Clear any lingering auth state on page load
+    const clearAuthState = () => {
+      indexedDB.deleteDatabase('firebaseLocalStorageDb');
+      localStorage.clear();
+      sessionStorage.clear();
+    };
+
+    // Clear auth state when the page loads
+    clearAuthState();
+
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      try {
+        if (!authInitialized) {
+          authInitialized = true;
+          setIsInitialized(true);
+        }
+
+        if (user) {
+          setIsAuthenticating(true);
+          // Check if the logged-in user has the correct email domain
+          if (!user.email.endsWith('@vitbhopal.ac.in')) {
+            await signOut(auth);
+            setErrorMessage('Access restricted. Only @vitbhopal.ac.in email addresses are allowed.');
+            setIsAuthenticating(false);
+            setIsLoading(false);
+            return;
+          }
+          router.push("/student"); // Redirect to dashboard if logged in with correct domain
+        } else {
+          setIsLoading(false);
+        }
+      } catch (error) {
+        console.error("Authentication error:", error);
+        setIsLoading(false);
+        setIsAuthenticating(false);
+      }
+    });
+
+    // Initialize media loading
     const handleLoad = () => {
-      setIsLoading(false);
+      if (isInitialized) {
+        setIsLoading(false);
+      }
     };
 
     const initializeMediaLoading = () => {
@@ -42,47 +87,9 @@ const Page = () => {
       if (loadedCount === mediaElements.length) handleLoad();
     };
 
-    // Initialize media loading
     initializeMediaLoading();
 
-    // Handle tab/window close
-    const handleBeforeUnload = (e) => {
-      e.preventDefault();
-      e.returnValue = '';
-      
-      if (auth.currentUser) {
-        // Synchronous signout
-        try {
-          indexedDB.deleteDatabase('firebaseLocalStorageDb');
-          localStorage.clear();
-          sessionStorage.clear();
-        } catch (error) {
-          console.error('Error clearing storage:', error);
-        }
-      }
-    };
-
-    // Add event listener for tab/window close
-    window.addEventListener('beforeunload', handleBeforeUnload);
-
-    // Check if user is already logged in
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        setIsAuthenticating(true);
-        // Check if the logged-in user has the correct email domain
-        if (!user.email.endsWith('@vitbhopal.ac.in')) {
-          await signOut(auth);
-          setErrorMessage('Access restricted. Only @vitbhopal.ac.in email addresses are allowed.');
-          setIsAuthenticating(false);
-          return;
-        }
-        router.push("/student"); // Redirect to dashboard if logged in with correct domain
-      }
-    });
-
-    // Cleanup function
     return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
       unsubscribe();
     };
   }, [router]);
@@ -91,8 +98,8 @@ const Page = () => {
   const handleGoogleSignIn = async () => {
     try {
       setErrorMessage(''); // Clear any existing error messages
+      setIsAuthenticating(true); // Show loading before popup
       const result = await signInWithPopup(auth, googleProvider);
-      setIsAuthenticating(true); // Show loading after email selection
       const userEmail = result.user.email;
       
       if (!userEmail.endsWith('@vitbhopal.ac.in')) {
@@ -116,9 +123,18 @@ const Page = () => {
     }
   };
 
+  // Show loading spinner while initializing
+  if (!isInitialized || isLoading) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-white z-50">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="relative w-full h-screen select-none">
-      {(isLoading || isAuthenticating) && (
+      {isAuthenticating && (
         <div className="absolute inset-0 flex items-center justify-center bg-white z-50">
           <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500"></div>
         </div>

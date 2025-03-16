@@ -15,13 +15,75 @@ function Page() {
   const [isOpen, setIsOpen] = useState(false);
   const [userPhoto, setUserPhoto] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isInitialized, setIsInitialized] = useState(false);
   const inputRef = useRef(null);
   const router = useRouter();
-  const [isUnloading, setIsUnloading] = useState(false);
 
+  // Effect for authentication and initialization
+  useEffect(() => {
+    let authInitialized = false;
+
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      try {
+        if (!authInitialized) {
+          authInitialized = true;
+          setIsInitialized(true);
+        }
+
+        if (user) {
+          console.log("User is signed in:", user.email);
+          setUserPhoto(user.photoURL);
+          
+          // Verify email domain
+          if (!user.email.endsWith('@vitbhopal.ac.in')) {
+            await signOut(auth);
+            router.push('/login');
+            return;
+          }
+        } else {
+          console.log("No user signed in, redirecting to login");
+          router.push('/login');
+        }
+      } catch (error) {
+        console.error("Authentication error:", error);
+        router.push('/login');
+      }
+    });
+
+    // Handle tab/window close
+    const handleTabClose = () => {
+      if (auth.currentUser) {
+        signOut(auth).then(() => {
+          indexedDB.deleteDatabase('firebaseLocalStorageDb');
+          localStorage.clear();
+          sessionStorage.clear();
+        }).catch(console.error);
+      }
+    };
+
+    // Add event listeners for tab/window close
+    window.addEventListener('beforeunload', handleTabClose);
+    window.addEventListener('unload', handleTabClose);
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') {
+        handleTabClose();
+      }
+    });
+
+    return () => {
+      window.removeEventListener('beforeunload', handleTabClose);
+      window.removeEventListener('unload', handleTabClose);
+      document.removeEventListener('visibilitychange', handleTabClose);
+      unsubscribe();
+    };
+  }, [router]);
+
+  // Effect for media loading
   useEffect(() => {
     const handleLoad = () => {
-      setIsLoading(false);
+      if (isInitialized) {
+        setIsLoading(false);
+      }
     };
 
     const initializeMediaLoading = () => {
@@ -45,73 +107,8 @@ function Page() {
       if (loadedCount === mediaElements.length) handleLoad();
     };
 
-    // Initialize media loading
     initializeMediaLoading();
-
-    // Check authentication state
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      try {
-        if (user) {
-          console.log("User is signed in:", user.email);
-          setUserPhoto(user.photoURL);
-          
-          // Verify email domain
-          if (!user.email.endsWith('@vitbhopal.ac.in')) {
-            await signOut(auth);
-            router.push('/login');
-            return;
-          }
-        } else {
-          console.log("No user signed in, redirecting to login");
-          router.push('/login');
-        }
-      } catch (error) {
-        console.error("Authentication error:", error);
-        router.push('/login');
-      }
-    });
-
-    // Handle visibility change (tab/window close)
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'hidden' && !isUnloading) {
-        if (auth.currentUser) {
-          // Synchronous signout
-          try {
-            indexedDB.deleteDatabase('firebaseLocalStorageDb');
-            localStorage.clear();
-            sessionStorage.clear();
-          } catch (error) {
-            console.error('Error clearing storage:', error);
-          }
-        }
-      }
-    };
-
-    // Handle page hide (browser close)
-    const handlePageHide = () => {
-      if (auth.currentUser) {
-        // Synchronous signout
-        try {
-          indexedDB.deleteDatabase('firebaseLocalStorageDb');
-          localStorage.clear();
-          sessionStorage.clear();
-        } catch (error) {
-          console.error('Error clearing storage:', error);
-        }
-      }
-    };
-
-    // Add event listeners
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('pagehide', handlePageHide);
-
-    // Cleanup function
-    return () => {
-      unsubscribe();
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('pagehide', handlePageHide);
-    };
-  }, [router, isUnloading]);
+  }, [isInitialized]);
 
   const handleOpen = () => {
     setIsOpen(!isOpen)
@@ -123,13 +120,17 @@ function Page() {
     }
   };
 
+  // Show loading spinner while initializing
+  if (!isInitialized || isLoading) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-white z-50">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="relative w-full h-screen select-none">
-      {isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-white z-50">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500"></div>
-        </div>
-      )}
       <div className={style['container']}>
         <div className={style['container-left']}>
           <div className={style['container-left-top']}>
