@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 
 const Page = () => {
   const [isLoading, setIsLoading] = useState(true);
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const router = useRouter();
 
@@ -67,10 +68,12 @@ const Page = () => {
     // Check if user is already logged in
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
+        setIsAuthenticating(true);
         // Check if the logged-in user has the correct email domain
         if (!user.email.endsWith('@vitbhopal.ac.in')) {
           await signOut(auth);
           setErrorMessage('Access restricted. Only @vitbhopal.ac.in email addresses are allowed.');
+          setIsAuthenticating(false);
           return;
         }
         router.push("/student"); // Redirect to dashboard if logged in with correct domain
@@ -89,12 +92,14 @@ const Page = () => {
     try {
       setErrorMessage(''); // Clear any existing error messages
       const result = await signInWithPopup(auth, googleProvider);
+      setIsAuthenticating(true); // Show loading after email selection
       const userEmail = result.user.email;
       
       if (!userEmail.endsWith('@vitbhopal.ac.in')) {
         // Sign out the user if email is not from vitbhopal.ac.in
         await signOut(auth);
         setErrorMessage('Access restricted. Only @vitbhopal.ac.in email addresses are allowed.');
+        setIsAuthenticating(false);
         return;
       }
       
@@ -107,12 +112,13 @@ const Page = () => {
       } else {
         setErrorMessage(error.message);
       }
+      setIsAuthenticating(false);
     }
   };
 
   return (
     <div className="relative w-full h-screen select-none">
-      {isLoading && (
+      {(isLoading || isAuthenticating) && (
         <div className="absolute inset-0 flex items-center justify-center bg-white z-50">
           <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500"></div>
         </div>
@@ -141,7 +147,7 @@ const Page = () => {
             <div className='font-bold text-black text-2xl text-center'>
               by VIT for VIT
             </div>
-            <div className='bg-[#007BFF] text-white flex my-7 p-2 rounded-lg mx-2 hover:scale-105 transition-transform duration-700 cursor-pointer'>
+            <div className='bg-[#007BFF] text-white flex my-7 p-2 rounded-lg mx-2 cursor-pointer'>
               <div className='w-4/5'>
                 <div className='text-3xl font-bold mx-5 mt-1'>
                   Explore as Guest
@@ -155,8 +161,8 @@ const Page = () => {
               </div>
             </div>
             <div 
-              className='bg-[#007BFF] text-white flex my-3 p-2 rounded-lg mx-2 hover:scale-105 transition-transform duration-700 cursor-pointer'
-              onClick={handleGoogleSignIn}
+              className='bg-[#007BFF] text-white flex my-3 p-2 rounded-lg mx-2 cursor-pointer'
+              onClick={!isAuthenticating ? handleGoogleSignIn : undefined}
             >
               <div className='w-4/5'>
                 <div className='text-3xl font-bold mx-5 mt-1'>
