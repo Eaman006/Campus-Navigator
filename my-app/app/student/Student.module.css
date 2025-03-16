@@ -44,7 +44,20 @@
     display: flex;
     justify-content: space-between;
     background-color: #fff;
+    border: 2px solid transparent;
     border-radius: 50px;
+    transition: all 0.3s ease;
+    cursor: text;
+}
+
+.input-container:focus-within{
+    border: 2px solid blue;
+    scale: 1.05;
+}
+
+.input-container input{
+    border: none;
+    outline: none;
 }
 
 .input-logo-container{
