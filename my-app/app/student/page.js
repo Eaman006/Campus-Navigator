@@ -1,5 +1,5 @@
 "use client"
-import React, { useRef } from 'react'
+import React, { useRef, useState } from 'react'
 import style from './Student.module.css'
 import Image from 'next/image';
 import Bot from '../../public/bot.png'
@@ -10,7 +10,12 @@ import Direction from '../../public/direction.png'
 import Search from '../../public/search.png'
 
 function Page() {
+  const [isOpen, setIsOpen] = useState(false)
   const inputRef = useRef(null);
+
+  const handleOpen = () => {
+    setIsOpen(!isOpen)
+  }
 
   const handleFocus = () => {
     if (inputRef.current) {
@@ -22,7 +27,21 @@ function Page() {
     <div className={style['container']}>
         <div className={style['container-left']}>
             <div className={style['container-left-top']}>
-                <Image src={Hamburger} width={50} height={50} alt='logo' className='pb-10 pt-6'/>
+                {isOpen?(
+                          <div className={style['hamburger-container']}>
+                            <div className='flex justify-between items-center'>
+                              <p className='inline-block font-bold text-2xl'>Campus Navigator</p>
+                              <span onClick={handleOpen} className='cursor-pointer hover:scale-115 duration-300 inline-block'>✖️</span>
+                            </div>
+                            <div className='w-70 mt-4'>Home</div>
+                            <div className='w-full mt-4 relative'>Academic Block <span className='absolute right-0'>🔽</span></div>
+                            <div className='w-full mt-4 relative'>Academic Block 2 <span className='absolute right-0'>🔽</span></div>
+                            <div className='w-full mt-4 relative'>Architecture Building <span className='absolute right-0'>🔽</span></div>
+                            <div className='w-full mt-4 relative'>Lab Complex <span className='absolute right-0'>🔽</span></div>
+                          </div>
+                ):(
+                          <Image src={Hamburger} width={50} height={50} alt='logo' className='pb-10 pt-6 cursor-pointer hover:scale-115 duration-300' onClick={handleOpen}/>
+                )}
                 <Image src={Recent} width={50} height={50} alt='logo' />
             </div>
             <div className={style['bot-container']}>
