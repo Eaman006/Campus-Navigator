@@ -66,10 +66,19 @@
 
 .hamburger-container{
     position: absolute;
-    top: 0;
-    left: 0;
     width: 20%;
     height: 100%;
     padding: 1% 2%;
     background-color: #fff;
+    transition: all 0.3s;
+    z-index: 100;
+}
+
+.open{
+    top: 0;
+    left: 0;
+}
+.close{
+    top: 0;
+    left: -1000;
 }

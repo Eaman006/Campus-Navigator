@@ -25,41 +25,41 @@ function Page() {
 
   return (
     <div className={style['container']}>
-        <div className={style['container-left']}>
-            <div className={style['container-left-top']}>
-                {isOpen?(
-                          <div className={style['hamburger-container']}>
-                            <div className='flex justify-between items-center'>
-                              <p className='inline-block font-bold text-2xl'>Campus Navigator</p>
-                              <span onClick={handleOpen} className='cursor-pointer hover:scale-115 duration-300 inline-block'>✖️</span>
-                            </div>
-                            <div className='w-70 mt-4'>Home</div>
-                            <div className='w-full mt-4 relative'>Academic Block <span className='absolute right-0'>🔽</span></div>
-                            <div className='w-full mt-4 relative'>Academic Block 2 <span className='absolute right-0'>🔽</span></div>
-                            <div className='w-full mt-4 relative'>Architecture Building <span className='absolute right-0'>🔽</span></div>
-                            <div className='w-full mt-4 relative'>Lab Complex <span className='absolute right-0'>🔽</span></div>
-                          </div>
-                ):(
-                          <Image src={Hamburger} width={50} height={50} alt='logo' className='pb-10 pt-6 cursor-pointer hover:scale-115 duration-300' onClick={handleOpen}/>
-                )}
-                <Image src={Recent} width={50} height={50} alt='logo' />
+      <div className={style['container-left']}>
+        <div className={style['container-left-top']}>
+
+          <div className={[style['hamburger-container'], isOpen ? (style.open) : (style.close)].join(' ')}>
+            <div className='flex justify-between items-center'>
+              <p className='inline-block font-bold text-2xl'>Campus Navigator</p>
+              <span onClick={handleOpen} className='cursor-pointer hover:scale-115 duration-300 inline-block'>✖️</span>
             </div>
-            <div className={style['bot-container']}>
-                <Image src={Bot} width={50} height={50} alt='logo' />   
-            </div>
+            <div className='w-70 mt-4'>Home</div>
+            <div className='w-full mt-4 relative'>Academic Block <span className='absolute right-0'>🔽</span></div>
+            <div className='w-full mt-4 relative'>Academic Block 2 <span className='absolute right-0'>🔽</span></div>
+            <div className='w-full mt-4 relative'>Architecture Building <span className='absolute right-0'>🔽</span></div>
+            <div className='w-full mt-4 relative'>Lab Complex <span className='absolute right-0'>🔽</span></div>
+          </div>
+
+          <Image src={Hamburger} width={50} height={50} alt='logo' className='pb-10 pt-6 cursor-pointer hover:scale-115 duration-300' onClick={handleOpen} />
+
+          <Image src={Recent} width={50} height={50} alt='logo' />
         </div>
-        <div className={style['container-right']}>
-            <div className={style['sub-container-right']}>
-                <div className={style['input-container']} onClick={handleFocus}>
-                    <input ref={inputRef} type="text" placeholder='Search any floor'/>
-                    <div className={style['input-logo-container']}>
-                        <Image src={Search} width={50} height={50} alt='logo' />
-                        <Image src={Direction} width={50} height={50} alt='logo' />
-                    </div>
-                </div>
-                <Image src={Profile} width={80} height={80} alt='logo' />
-            </div>
+        <div className={style['bot-container']}>
+          <Image src={Bot} width={50} height={50} alt='logo' />
         </div>
+      </div>
+      <div className={style['container-right']}>
+        <div className={style['sub-container-right']}>
+          <div className={style['input-container']} onClick={handleFocus}>
+            <input ref={inputRef} type="text" placeholder='Search any floor' />
+            <div className={style['input-logo-container']}>
+              <Image src={Search} width={50} height={50} alt='logo' />
+              <Image src={Direction} width={50} height={50} alt='logo' />
+            </div>
+          </div>
+          <Image src={Profile} width={80} height={80} alt='logo' />
+        </div>
+      </div>
     </div>
   )
 }
