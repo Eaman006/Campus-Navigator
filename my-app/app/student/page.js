@@ -42,10 +42,6 @@ function Page() {
   const [isHomeSelected, setIsHomeSelected] = useState(true);
   const [showFloorMap, setShowFloorMap] = useState(false);
   const [showAcademicDropdown, setShowAcademicDropdown] = useState(false);
-  const [userEmail, setUserEmail] = useState('');
-  const [userPassword, setUserPassword] = useState('');
-  const [isAuthenticating, setIsAuthenticating] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
 
   // Effect for authentication and initialization
   useEffect(() => {
@@ -231,13 +227,6 @@ function Page() {
     setShowFloorDropdown4(false);
     // Select home
     setIsHomeSelected(true);
-  };
-
-  const handleEmailLogin = async (e) => {
-    e.preventDefault();
-    setIsAuthenticating(true);
-    setErrorMessage('');
-    // ... login logic
   };
 
   // Show loading spinner while initializing
