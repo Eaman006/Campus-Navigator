@@ -33,7 +33,13 @@ function Page() {
   const inputRef = useRef(null);
   const router = useRouter();
   const [showFloorDropdown, setShowFloorDropdown] = useState(false);
+  const [showFloorDropdown2, setShowFloorDropdown2] = useState(false);
+  const [showFloorDropdown3, setShowFloorDropdown3] = useState(false);
+  const [showFloorDropdown4, setShowFloorDropdown4] = useState(false);
   const [selectedFloor, setSelectedFloor] = useState(null);
+  const [selectedFloor2, setSelectedFloor2] = useState(null);
+  const [selectedFloor3, setSelectedFloor3] = useState(null);
+  const [selectedFloor4, setSelectedFloor4] = useState(null);
 
   // Effect for authentication and initialization
   useEffect(() => {
@@ -192,9 +198,8 @@ function Page() {
     }
   };
 
-  const handleFloorSelect = (floor) => {
-    setSelectedFloor(floor);
-    setShowFloorDropdown(false);
+  const handleFloorSelect = (floor, setter) => {
+    setter(floor);
     // Here you can add logic to handle floor selection
     console.log(`Selected floor: ${floor}`);
   };
@@ -323,20 +328,130 @@ function Page() {
                       <div
                         key={floor}
                         className={`px-4 py-2 text-sm cursor-pointer hover:bg-gray-100 flex items-center gap-2 ${
-                          selectedFloor === floor ? 'bg-blue-50' : ''
+                          selectedFloor === floor ? 'bg-blue-50 text-blue-600' : ''
                         }`}
-                        onClick={() => handleFloorSelect(floor)}
+                        onClick={() => handleFloorSelect(floor, setSelectedFloor)}
                       >
-                        
                         <span>Floor {floor}</span>
                       </div>
                     ))}
                   </div>
                 )}
               </div>
-              <div className='w-full mt-4 relative cursor-pointer flex items-center'><span><Image src='/block.png' width={20} height={20} alt='🔽'/></span> <span>&nbsp;</span> Academic Block 2 <span className='absolute right-0'><Image src='/downArrow.png' width={30} height={30} alt='🔽'/></span></div>
-              <div className='w-full mt-4 relative cursor-pointer flex items-center'><span><Image src='/block.png' width={20} height={20} alt='🔽'/></span> <span>&nbsp;</span> Architecture Building <span className='absolute right-0'><Image src='/downArrow.png' width={30} height={30} alt='🔽'/></span></div>
-              <div className='w-full mt-4 relative cursor-pointer flex items-center'><span><Image src='/block.png' width={20} height={20} alt='🔽'/></span> <span>&nbsp;</span> Lab Complex <span className='absolute right-0'><Image src='/downArrow.png' width={30} height={30} alt='🔽'/></span></div>
+
+              {/* Academic Block 2 */}
+              <div className='relative'>
+                <div 
+                  className='w-full mt-4 relative cursor-pointer flex items-center'
+                  onClick={() => setShowFloorDropdown2(!showFloorDropdown2)}
+                >
+                  <span><Image src='/block.png' width={20} height={20} alt='block'/></span>
+                  <span>&nbsp;</span>
+                  Academic Block 2
+                  <span className='absolute right-0'>
+                    <Image 
+                      src='/downArrow.png' 
+                      width={30} 
+                      height={30} 
+                      alt='dropdown'
+                      className={`transform transition-transform duration-200 ${showFloorDropdown2 ? 'rotate-180' : ''}`}
+                    />
+                  </span>
+                </div>
+                
+                {/* Floor Dropdown Menu */}
+                {showFloorDropdown2 && (
+                  <div className="w-full bg-white border-l-2 border-blue-500 ml-4">
+                    {[0, 1, 2, 3, 4, 5].map((floor) => (
+                      <div
+                        key={floor}
+                        className={`px-4 py-2 text-sm cursor-pointer hover:bg-gray-100 flex items-center gap-2 ${
+                          selectedFloor2 === floor ? 'bg-blue-50 text-blue-600' : ''
+                        }`}
+                        onClick={() => handleFloorSelect(floor, setSelectedFloor2)}
+                      >
+                        <span>Floor {floor}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Architecture Building */}
+              <div className='relative'>
+                <div 
+                  className='w-full mt-4 relative cursor-pointer flex items-center'
+                  onClick={() => setShowFloorDropdown3(!showFloorDropdown3)}
+                >
+                  <span><Image src='/block.png' width={20} height={20} alt='block'/></span>
+                  <span>&nbsp;</span>
+                  Architecture Building
+                  <span className='absolute right-0'>
+                    <Image 
+                      src='/downArrow.png' 
+                      width={30} 
+                      height={30} 
+                      alt='dropdown'
+                      className={`transform transition-transform duration-200 ${showFloorDropdown3 ? 'rotate-180' : ''}`}
+                    />
+                  </span>
+                </div>
+                
+                {/* Floor Dropdown Menu */}
+                {showFloorDropdown3 && (
+                  <div className="w-full bg-white border-l-2 border-blue-500 ml-4">
+                    {[0, 1, 2, 3, 4, 5].map((floor) => (
+                      <div
+                        key={floor}
+                        className={`px-4 py-2 text-sm cursor-pointer hover:bg-gray-100 flex items-center gap-2 ${
+                          selectedFloor3 === floor ? 'bg-blue-50 text-blue-600' : ''
+                        }`}
+                        onClick={() => handleFloorSelect(floor, setSelectedFloor3)}
+                      >
+                        <span>Floor {floor}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Lab Complex */}
+              <div className='relative'>
+                <div 
+                  className='w-full mt-4 relative cursor-pointer flex items-center'
+                  onClick={() => setShowFloorDropdown4(!showFloorDropdown4)}
+                >
+                  <span><Image src='/block.png' width={20} height={20} alt='block'/></span>
+                  <span>&nbsp;</span>
+                  Lab Complex
+                  <span className='absolute right-0'>
+                    <Image 
+                      src='/downArrow.png' 
+                      width={30} 
+                      height={30} 
+                      alt='dropdown'
+                      className={`transform transition-transform duration-200 ${showFloorDropdown4 ? 'rotate-180' : ''}`}
+                    />
+                  </span>
+                </div>
+                
+                {/* Floor Dropdown Menu */}
+                {showFloorDropdown4 && (
+                  <div className="w-full bg-white border-l-2 border-blue-500 ml-4">
+                    {[0, 1, 2, 3, 4, 5].map((floor) => (
+                      <div
+                        key={floor}
+                        className={`px-4 py-2 text-sm cursor-pointer hover:bg-gray-100 flex items-center gap-2 ${
+                          selectedFloor4 === floor ? 'bg-blue-50 text-blue-600' : ''
+                        }`}
+                        onClick={() => handleFloorSelect(floor, setSelectedFloor4)}
+                      >
+                        <span>Floor {floor}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
 
             <Image src={Hamburger} width={50} height={50} alt='logo' className='pb-10 pt-6 cursor-pointer hover:scale-115 duration-300' onClick={handleOpen} />
