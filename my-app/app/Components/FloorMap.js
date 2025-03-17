@@ -2,7 +2,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { getTeacherDetails } from '../utils/excelData';
 
-const FloorMap = ({ floorNumber }) => {
+const FloorMap = ({ floorNumber, academicBlock = 1 }) => {
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [showDetails, setShowDetails] = useState(false);
   const [roomDetails, setRoomDetails] = useState(null);
@@ -14,15 +14,12 @@ const FloorMap = ({ floorNumber }) => {
   const svgRef = useRef(null);
 
   // Function to get the correct SVG path
-  const getSvgPath = (floor) => {
-    // Try different possible file name formats
-    const possiblePaths = [
-      `/Floor${floor}.svg`,
-      `/floor${floor}.svg`,
-      `/Floor ${floor}.svg`,
-      `/floor ${floor}.svg`
-    ];
-    return possiblePaths[0]; // Start with the first format
+  const getSvgPath = (floor, block) => {
+    // Only return path for Academic Block 1
+    if (block !== 1) {
+      return null;
+    }
+    return `/Floor${floor}.svg`;
   };
 
   // Load floor data
@@ -31,8 +28,13 @@ const FloorMap = ({ floorNumber }) => {
       setIsLoading(true);
       setSvgError(false);
       try {
-        const floorModule = await import(`@/app/data/Floor${floorNumber}.js`);
-        setFloorData(floorModule.default);
+        // Only load data for Academic Block 1
+        if (academicBlock === 1) {
+          const floorModule = await import(`@/app/data/Floor${floorNumber}.js`);
+          setFloorData(floorModule.default);
+        } else {
+          setFloorData(null);
+        }
       } catch (error) {
         console.error(`Error loading data for floor ${floorNumber}:`, error);
         setFloorData(null);
@@ -42,7 +44,7 @@ const FloorMap = ({ floorNumber }) => {
     };
 
     loadData();
-  }, [floorNumber]);
+  }, [floorNumber, academicBlock]);
 
   useEffect(() => {
     const handleSvgLoad = () => {
@@ -84,7 +86,7 @@ const FloorMap = ({ floorNumber }) => {
     };
 
     const handleSvgError = () => {
-      console.error(`Failed to load SVG for floor ${floorNumber}`);
+      console.error(`Failed to load SVG for Block ${academicBlock}, Floor ${floorNumber}`);
       setSvgError(true);
       setIsLoading(false);
     };
@@ -100,7 +102,7 @@ const FloorMap = ({ floorNumber }) => {
         svgRef.current.removeEventListener('error', handleSvgError);
       }
     };
-  }, [selectedRoom, floorNumber, floorData]);
+  }, [selectedRoom, floorNumber, floorData, academicBlock]);
 
   const handleCloseDetails = () => {
     if (selectedRoom) {
@@ -135,12 +137,24 @@ const FloorMap = ({ floorNumber }) => {
     );
   }
 
+  // Show "Map not available" message for Academic Block 2 and other buildings
+  if (academicBlock !== 1) {
+    return (
+      <div className="w-full h-full flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-xl font-semibold text-gray-700 mb-2">Map Not Available</p>
+          <p className="text-gray-600">Floor maps for this building are currently under development.</p>
+        </div>
+      </div>
+    );
+  }
+
   if (svgError) {
     return (
       <div className="w-full h-full flex items-center justify-center">
         <div className="text-center">
           <p className="text-red-500 mb-2">Unable to load floor map</p>
-          <p className="text-gray-600 mb-4">Please check if the SVG file exists and try again</p>
+          <p className="text-gray-600 mb-4">SVG file for Block {academicBlock}, Floor {floorNumber} may be missing or inaccessible</p>
           <button 
             onClick={() => {
               setSvgError(false);
@@ -162,14 +176,14 @@ const FloorMap = ({ floorNumber }) => {
       <div className="w-full h-full flex items-center justify-center p-4">
         <object
           ref={svgRef}
-          data={getSvgPath(floorNumber)}
+          data={getSvgPath(floorNumber, academicBlock)}
           type="image/svg+xml"
           className="w-full h-full max-h-[70vh] object-contain"
           style={{ maxWidth: '90%' }}
         >
           <div className="text-center">
             <p className="text-red-500 mb-2">Unable to load floor map</p>
-            <p className="text-gray-600 mb-4">SVG file may be missing or inaccessible</p>
+            <p className="text-gray-600 mb-4">SVG file for Block {academicBlock}, Floor {floorNumber} may be missing or inaccessible</p>
             <button 
               onClick={() => window.location.reload()}
               className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
