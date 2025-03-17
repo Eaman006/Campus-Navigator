@@ -13,6 +13,18 @@ const FloorMap = ({ floorNumber }) => {
   const [svgError, setSvgError] = useState(false);
   const svgRef = useRef(null);
 
+  // Function to get the correct SVG path
+  const getSvgPath = (floor) => {
+    // Try different possible file name formats
+    const possiblePaths = [
+      `/Floor${floor}.svg`,
+      `/floor${floor}.svg`,
+      `/Floor ${floor}.svg`,
+      `/floor ${floor}.svg`
+    ];
+    return possiblePaths[0]; // Start with the first format
+  };
+
   // Load floor data
   useEffect(() => {
     const loadData = async () => {
@@ -63,7 +75,7 @@ const FloorMap = ({ floorNumber }) => {
                 setRoomDetails(floorData[roomId]);
                 setShowDetails(true);
                 setShowTeacherDetails(false);
-                setTeacherDetailsHtml(''); // Clear previous teacher details
+                setTeacherDetailsHtml('');
               }
             });
           });
@@ -72,6 +84,7 @@ const FloorMap = ({ floorNumber }) => {
     };
 
     const handleSvgError = () => {
+      console.error(`Failed to load SVG for floor ${floorNumber}`);
       setSvgError(true);
       setIsLoading(false);
     };
@@ -126,12 +139,17 @@ const FloorMap = ({ floorNumber }) => {
     return (
       <div className="w-full h-full flex items-center justify-center">
         <div className="text-center">
-          <p className="text-red-500 mb-4">Error loading floor map</p>
+          <p className="text-red-500 mb-2">Unable to load floor map</p>
+          <p className="text-gray-600 mb-4">Please check if the SVG file exists and try again</p>
           <button 
-            onClick={() => window.location.reload()}
+            onClick={() => {
+              setSvgError(false);
+              setIsLoading(true);
+              window.location.reload();
+            }}
             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
           >
-            Reload Page
+            Retry Loading
           </button>
         </div>
       </div>
@@ -144,13 +162,14 @@ const FloorMap = ({ floorNumber }) => {
       <div className="w-full h-full flex items-center justify-center p-4">
         <object
           ref={svgRef}
-          data={`/Floor${floorNumber}.svg`}
+          data={getSvgPath(floorNumber)}
           type="image/svg+xml"
           className="w-full h-full max-h-[70vh] object-contain"
           style={{ maxWidth: '90%' }}
         >
           <div className="text-center">
-            <p className="text-red-500 mb-2">Your browser does not support SVG or the file could not be loaded</p>
+            <p className="text-red-500 mb-2">Unable to load floor map</p>
+            <p className="text-gray-600 mb-4">SVG file may be missing or inaccessible</p>
             <button 
               onClick={() => window.location.reload()}
               className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
