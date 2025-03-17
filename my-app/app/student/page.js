@@ -20,6 +20,7 @@ function Page() {
   const [endFloorMap, setEndFloorMap] = useState("");
   const [loading, setLoading] = useState(false);
   const [showStartMap, setShowStartMap] = useState(true);
+  const [svgData, setSvgData] = useState(null);
   const mapRef = useRef(null);
   const inputRef = useRef(null);
   const router = useRouter();
@@ -163,6 +164,7 @@ function Page() {
     if (mapRef.current) {
       mapRef.current.style.display = 'block';
     }
+
     if (!start || !end) {
       alert("Please enter both start and end floors.");
       return;
@@ -171,7 +173,7 @@ function Page() {
     setLoading(true);
 
     try {
-      const response = await fetch("http://127.0.0.1:5000/process_path", {
+      const response = await fetch("https://project-expo-group-90-production.up.railway.app/process_path", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -185,9 +187,28 @@ function Page() {
       });
 
       if (response.ok) {
-        const data = await response.json();
-        setStartFloorMap(data.files.start_floor);
-        setEndFloorMap(data.files.end_floor);
+        const contentType = response.headers.get("Content-Type");
+
+        if (contentType.includes("application/json")) {
+          // Complex Path - JSON Response
+          const data = await response.json();
+          if (data.error) {
+            alert(data.error);
+            return;
+          }
+
+          setStartFloorMap(data.files.start_floor);
+          setEndFloorMap(data.files.end_floor);
+          setSvgData(null); // Reset SVG data
+        } else if (contentType.includes("image/svg+xml")) {
+          // Same Floor - SVG Response
+          const svgText = await response.text();
+          setSvgData(svgText); // Store the SVG text
+          setStartFloorMap(null);
+          setEndFloorMap(null);
+        } else {
+          console.error("Unexpected response format");
+        }
       } else {
         console.error("Error fetching path:", response.statusText);
       }
@@ -197,6 +218,7 @@ function Page() {
       setLoading(false);
     }
   };
+
 
   // Show loading spinner while initializing
   if (!isInitialized || isLoading) {
@@ -228,7 +250,7 @@ function Page() {
 
             {/* Input Fields */}
             <div className="flex flex-col flex-grow">
-              
+
               <input
                 type="text"
                 placeholder="Choose starting floor"
@@ -276,14 +298,20 @@ function Page() {
               onClick={handleMapClose}
               className="absolute top-2 right-2 bg-gray-300 p-2 rounded-md shadow-md z-10 cursor-pointer"
             >
-              <Image src='/Close.png' width={30} height={30} alt='close'/>
+              <Image src='/Close.png' width={30} height={30} alt='close' />
             </button>
 
-            {/* iFrame Display */}
-            <iframe
-              src={`http://127.0.0.1:5000${showStartMap ? startFloorMap : endFloorMap}`}
-              className="w-150 h-150 border rounded-lg"
-            />
+            {svgData ? (
+              // Display SVG directly for same floor
+              <div dangerouslySetInnerHTML={{ __html: svgData }} className="w-[500px] h-[500px] border rounded-lg" />
+            ) : (
+              // For different floor
+              <iframe
+                src={`https://project-expo-group-90-production.up.railway.app/${showStartMap ? startFloorMap : endFloorMap}`}
+                className="w-150 h-150 border rounded-lg"
+              />
+            )}
+
           </div>
         </div>
 
