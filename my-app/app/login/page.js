@@ -4,13 +4,15 @@ import Image from 'next/image';
 import { auth, googleProvider } from "@/lib/firebase";
 import { signInWithEmailAndPassword, signInWithPopup, onAuthStateChanged, signOut } from "firebase/auth";
 import { useRouter } from "next/navigation";
-import style from './Login.module.css';
+
 
 const Page = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [isInitialized, setIsInitialized] = useState(false);
+  const [userEmail, setUserEmail] = useState('');
+  const [userPassword, setUserPassword] = useState('');
   const router = useRouter();
 
   // Effect for authentication and initialization
@@ -83,6 +85,31 @@ const Page = () => {
     };
   }, [router]);
 
+  // Handle Email/Password Login
+  const handleEmailLogin = async (e) => {
+    e.preventDefault();
+    setIsAuthenticating(true);
+    setErrorMessage('');
+
+    try {
+      const result = await signInWithEmailAndPassword(auth, userEmail, userPassword);
+      const user = result.user;
+      
+      if (!user.email.endsWith('@vitbhopal.ac.in') && user.email !== 'codernavank@gmail.com') {
+        await signOut(auth);
+        setErrorMessage('Access restricted. Only @vitbhopal.ac.in email addresses and codernavank@gmail.com are allowed.');
+        setIsAuthenticating(false);
+        return;
+      }
+
+      router.push("/student");
+    } catch (error) {
+      console.error("Error during sign in:", error.message);
+      setErrorMessage('Invalid email or password. Please try again.');
+      setIsAuthenticating(false);
+    }
+  };
+
   // Handle Google Sign In
   const handleGoogleSignIn = async () => {
     try {
@@ -128,7 +155,7 @@ const Page = () => {
           <Image src="/logo.png" alt="Logo" width={150} height={150} />
         </div>
         <h1 className={style.title}>Campus Navigator</h1>
-        <form onSubmit={handleGoogleSignIn} className={style.form}>
+        <form onSubmit={handleEmailLogin} className={style.form}>
           <div className={style.inputGroup}>
             <input
               type="email"
@@ -148,14 +175,14 @@ const Page = () => {
             />
           </div>
           {errorMessage && <p className={style.error}>{errorMessage}</p>}
-          <button type="submit" className={style.loginButton} disabled={isLoading}>
-            {isLoading ? 'Logging in...' : 'Login'}
+          <button type="submit" className={style.loginButton} disabled={isAuthenticating}>
+            {isAuthenticating ? 'Logging in...' : 'Login'}
           </button>
           <button
             type="button"
             onClick={handleGoogleSignIn}
             className={style.googleButton}
-            disabled={isLoading}
+            disabled={isAuthenticating}
           >
             <Image src="/google.png" alt="Google" width={20} height={20} />
             Continue with Google
