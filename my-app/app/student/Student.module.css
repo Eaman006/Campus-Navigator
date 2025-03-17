@@ -31,14 +31,16 @@
     height: 100%;
     padding-top: 1%;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     background-color: skyblue;
 }
+
 .sub-container-right{
     width: 90%;
     height: fit-content;
     display: flex;
     justify-content: space-between;
+    margin: 0 auto;
 }
 
 .input-container{

@@ -10,6 +10,7 @@ import { auth } from "@/lib/firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { useRouter } from 'next/navigation';
 import { Montserrat } from "next/font/google";
+import FloorMap from '../Components/FloorMap';
 
 const montserrat = Montserrat({
   subsets: ["latin"], 
@@ -39,6 +40,7 @@ function Page() {
   const [selectedBuilding, setSelectedBuilding] = useState(null);
   const [selectedFloor, setSelectedFloor] = useState(null);
   const [isHomeSelected, setIsHomeSelected] = useState(true);
+  const [showFloorMap, setShowFloorMap] = useState(false);
 
   // Effect for authentication and initialization
   useEffect(() => {
@@ -207,6 +209,8 @@ function Page() {
     setShowFloorDropdown4(false);
     // Deselect home when a building is selected
     setIsHomeSelected(false);
+    // Show floor map
+    setShowFloorMap(true);
     console.log(`Selected ${building} Floor ${floor}`);
   };
 
@@ -305,10 +309,15 @@ function Page() {
             </button>
 
             {/* iFrame Display */}
-            <iframe
-              src={`http://127.0.0.1:5000${showStartMap ? startFloorMap : endFloorMap}`}
-              className="w-150 h-150 border rounded-lg"
-            />
+            <object
+              className="w-full h-full max-h-[70vh] object-contain"
+              style={{ maxWidth: '90%' }}
+            >
+              <iframe
+                src={`http://127.0.0.1:5000${showStartMap ? startFloorMap : endFloorMap}`}
+                className="w-150 h-150 border rounded-lg"
+              />
+            </object>
           </div>
         </div>
 
@@ -550,6 +559,34 @@ function Page() {
             <div className={style['bot-container']}>
               <Image src='/Chatbot.png' width={45} height={45} alt='logo' />
             </div>
+          </div>
+
+          {/* Floor Map Display */}
+          <div className="w-full h-[calc(100%-4rem)] mt-4">
+            {isLoading ? (
+              <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500"></div>
+            ) : showFloorMap ? (
+              <div className="w-full h-full">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-xl font-bold">
+                    {selectedBuilding} - Floor {selectedFloor}
+                  </h2>
+                  <button
+                    onClick={() => setShowFloorMap(false)}
+                    className="text-gray-500 hover:text-gray-700"
+                  >
+                    ✕
+                  </button>
+                </div>
+                <div className="w-full h-[calc(100%-4rem)] bg-white rounded-lg shadow-lg overflow-hidden">
+                  <FloorMap />
+                </div>
+              </div>
+            ) : (
+              <div className='w-full h-full flex items-center justify-center'>
+                <div className='text-2xl font-bold text-gray-500'>Select a building and floor to view the map</div>
+              </div>
+            )}
           </div>
         </div>
       </div>
