@@ -1,31 +1,33 @@
 "use client"
 import React, { useEffect, useRef, useState } from 'react';
+import { getTeacherDetails } from '../utils/excelData';
 
 const FloorMap = ({ floorNumber }) => {
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [showDetails, setShowDetails] = useState(false);
   const [roomDetails, setRoomDetails] = useState(null);
   const [floorData, setFloorData] = useState(null);
+  const [teacherDetailsHtml, setTeacherDetailsHtml] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [showTeacherDetails, setShowTeacherDetails] = useState(false);
   const svgRef = useRef(null);
 
-  // Load floor data from corresponding JS file
+  // Load floor data
   useEffect(() => {
-    const loadFloorData = async () => {
+    const loadData = async () => {
       setIsLoading(true);
       try {
-        // Import floor data from the data directory
         const floorModule = await import(`@/app/data/Floor${floorNumber}.js`);
         setFloorData(floorModule.default);
       } catch (error) {
-        console.error(`Error loading floor ${floorNumber} data:`, error);
+        console.error(`Error loading data for floor ${floorNumber}:`, error);
         setFloorData(null);
       } finally {
         setIsLoading(false);
       }
     };
 
-    loadFloorData();
+    loadData();
   }, [floorNumber]);
 
   useEffect(() => {
@@ -58,6 +60,8 @@ const FloorMap = ({ floorNumber }) => {
                 setSelectedRoom(e.target);
                 setRoomDetails(floorData[roomId]);
                 setShowDetails(true);
+                setShowTeacherDetails(false);
+                setTeacherDetailsHtml(''); // Clear previous teacher details
               }
             });
           });
@@ -82,7 +86,23 @@ const FloorMap = ({ floorNumber }) => {
       setSelectedRoom(null);
     }
     setShowDetails(false);
+    setShowTeacherDetails(false);
     setRoomDetails(null);
+    setTeacherDetailsHtml('');
+  };
+
+  const handleViewTeacherDetails = async () => {
+    if (!selectedRoom) return;
+
+    setTeacherDetailsHtml('Loading teacher details...');
+    setShowTeacherDetails(true);
+
+    try {
+      const teacherHtml = await getTeacherDetails(selectedRoom.id);
+      setTeacherDetailsHtml(teacherHtml);
+    } catch (error) {
+      setTeacherDetailsHtml(`<p class='text-red-500'>Error loading teacher details: ${error.message}</p>`);
+    }
   };
 
   if (isLoading) {
@@ -109,9 +129,9 @@ const FloorMap = ({ floorNumber }) => {
 
         {/* Room Details Panel */}
         {showDetails && roomDetails && (
-          <div className="absolute left-4 top-4 bg-white rounded-lg shadow-lg p-4 w-72 z-10">
-            <div className="flex justify-between items-start mb-4">
-              <h2 className="text-xl font-bold">Room Details</h2>
+          <div className="absolute left-4 top-4 bg-white rounded-lg shadow-lg p-3 w-80 z-10 max-h-[70vh] flex flex-col">
+            <div className="flex justify-between items-start mb-2">
+              <h2 className="text-lg font-bold">Room Details</h2>
               <button
                 onClick={handleCloseDetails}
                 className="text-gray-500 hover:text-gray-700"
@@ -119,20 +139,46 @@ const FloorMap = ({ floorNumber }) => {
                 ✕
               </button>
             </div>
-            <div 
-              className="prose"
-              dangerouslySetInnerHTML={{ __html: roomDetails.details }}
-            />
-            {roomDetails.hasTeachers && (
-              <button
-                className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                onClick={() => {
-                  // Handle teacher details view
-                  console.log("View teacher details");
-                }}
-              >
-                View Teacher Details
-              </button>
+            
+            {!showTeacherDetails ? (
+              <>
+                <div 
+                  className="prose prose-sm overflow-y-auto"
+                  dangerouslySetInnerHTML={{ __html: roomDetails.details }}
+                />
+                {roomDetails.hasTeachers && (
+                  <button
+                    className="mt-3 bg-blue-500 text-white px-3 py-1.5 rounded hover:bg-blue-600 text-sm"
+                    onClick={handleViewTeacherDetails}
+                  >
+                    View Teacher Details
+                  </button>
+                )}
+              </>
+            ) : (
+              <div className="teacher-details flex flex-col min-h-0">
+                <h3 className="text-base font-semibold mb-2">Teacher Information</h3>
+                <div 
+                  className="overflow-y-auto flex-grow pr-2 custom-scrollbar mb-3"
+                  style={{
+                    maxHeight: 'calc(70vh - 9rem)',
+                    scrollbarWidth: 'thin',
+                    scrollbarColor: '#CBD5E0 #EDF2F7'
+                  }}
+                  dangerouslySetInnerHTML={{ __html: teacherDetailsHtml }}
+                />
+                <div className="bg-white pt-1">
+                  <button
+                    className="w-full bg-gray-500 text-white px-3 py-1.5 rounded hover:bg-gray-600 text-sm"
+                    onClick={() => {
+                      setShowTeacherDetails(false);
+                      setTeacherDetailsHtml('');
+                    }}
+                  >
+                    Back to Room Details
+                  </button>
+                </div>
+              </div>
             )}
           </div>
         )}
