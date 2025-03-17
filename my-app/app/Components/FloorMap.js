@@ -5,53 +5,28 @@ const FloorMap = ({ floorNumber }) => {
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [showDetails, setShowDetails] = useState(false);
   const [roomDetails, setRoomDetails] = useState(null);
+  const [floorData, setFloorData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const svgRef = useRef(null);
 
-  // Room data for Floor 0
-  const floor0RoomData = {
-    room012: { details: "Room 012: Auditorium1<br>Features: Air Conditioned, Projector, Wi-Fi", hasTeachers: false },
-    room004: { details: "Room 004: Teacher's Cabin<br>Features: Desks, Computers, Wi-Fi", hasTeachers: true },
-    room003: { details: "Room 003: Classroom<br>Features: Desks, Computers, Wi-Fi", hasTeachers: false },
-    room005: { details: "Room 005: Electrical Panel Room", hasTeachers: false },
-    room006: { details: "Room 006: Indian Bank", hasTeachers: false },
-    room007: { details: "Room 007: Classroom<br>Features: Desks, Computers, Wi-Fi", hasTeachers: false },
-    room008: { details: "Room 008: Classroom<br>Features: Desks, Computers, Wi-Fi", hasTeachers: false },
-    room009A: { details: "Room 009A: Boy's Washroom", hasTeachers: false },
-    room009B: { details: "Room 009B: Boy's Washroom", hasTeachers: false },
-    room010: { details: "Room 010: Classroom<br>Features: Desks, Computers, Wi-Fi", hasTeachers: false },
-    room011: { details: "Room 011: Dr Anant Kant Shukla's Cabin", hasTeachers: false },
-    room020: { details: "Room 020: Classroom<br>Features: Desks, Computers, Wi-Fi", hasTeachers: false },
-    room017: { details: "Room 017: Classroom<br>Features: Desks, Computers, Wi-Fi", hasTeachers: false },
-    room018B: { details: "Room 018B: Boy's Washroom", hasTeachers: false },
-    room018A: { details: "Room 018A: Girl's Washroom", hasTeachers: false },
-    room016: { details: "Room 016: Classroom<br>Features: Desks, Computers, Wi-Fi", hasTeachers: false },
-    room021: { details: "Room 021: Classroom<br>Features: Desks, Computers, Wi-Fi", hasTeachers: false },
-    room002: { details: "Room 002: Classroom<br>Features: Desks, Computers, Wi-Fi", hasTeachers: false },
-    room001: { details: "Room 001: Classroom<br>Features: Desks, Computers, Wi-Fi", hasTeachers: false },
-    room025: { details: "Room 025: Classroom<br>Features: Desks, Computers, Wi-Fi", hasTeachers: false },
-    room024: { details: "Room 024: Classroom<br>Features: Desks, Computers, Wi-Fi", hasTeachers: false },
-    room023: { details: "Room 023: Classroom<br>Features: Desks, Computers, Wi-Fi", hasTeachers: false },
-    room022: { details: "Room 022: Teacher's Cabin<br>Features: Desks, Computers, Wi-Fi", hasTeachers: true },
-    room015: { details: "Room 015: Classroom<br>Features: Desks, Computers, Wi-Fi", hasTeachers: false },
-    roomWaiting: { details: "Waiting Area", hasTeachers: false },
-    roomSankar1: { details: "Sankar Vishwanthan's Office", hasTeachers: false },
-    roomG: { details: "G Vishwanthan's Office", hasTeachers: false },
-    roomRamsai: { details: "Ramasai Balswami's Office", hasTeachers: false },
-    roomStore: { details: "Store room3", hasTeachers: false },
-  };
+  // Load floor data from corresponding JS file
+  useEffect(() => {
+    const loadFloorData = async () => {
+      setIsLoading(true);
+      try {
+        // Import floor data from the data directory
+        const floorModule = await import(`@/app/data/Floor${floorNumber}.js`);
+        setFloorData(floorModule.default);
+      } catch (error) {
+        console.error(`Error loading floor ${floorNumber} data:`, error);
+        setFloorData(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  // Room data for Floor 1
-  const floor1RoomData = {
-    room101: { details: "Room 101: Computer Lab<br>Features: Computers, Wi-Fi, Air Conditioned", hasTeachers: false },
-    room102: { details: "Room 102: Physics Lab<br>Features: Lab Equipment, Wi-Fi", hasTeachers: true },
-    room103: { details: "Room 103: Chemistry Lab<br>Features: Lab Equipment, Safety Gear", hasTeachers: true },
-    room104: { details: "Room 104: Classroom<br>Features: Projector, Wi-Fi", hasTeachers: false },
-    room105: { details: "Room 105: Faculty Room<br>Features: Desks, Computers", hasTeachers: true },
-    room106: { details: "Room 106: Conference Room<br>Features: Projector, Video Conferencing", hasTeachers: false },
-  };
-
-  // Select room data based on floor number
-  const roomData = floorNumber === 0 ? floor0RoomData : floor1RoomData;
+    loadFloorData();
+  }, [floorNumber]);
 
   useEffect(() => {
     const handleSvgLoad = () => {
@@ -77,11 +52,11 @@ const FloorMap = ({ floorNumber }) => {
                 selectedRoom.classList.remove("active");
               }
               
-              if (roomData[roomId]) {
+              if (floorData && floorData[roomId]) {
                 // Set new selection
                 e.target.classList.add("active");
                 setSelectedRoom(e.target);
-                setRoomDetails(roomData[roomId]);
+                setRoomDetails(floorData[roomId]);
                 setShowDetails(true);
               }
             });
@@ -99,7 +74,7 @@ const FloorMap = ({ floorNumber }) => {
         svgRef.current.removeEventListener('load', handleSvgLoad);
       }
     };
-  }, [selectedRoom, floorNumber, roomData]);
+  }, [selectedRoom, floorNumber, floorData]);
 
   const handleCloseDetails = () => {
     if (selectedRoom) {
@@ -109,6 +84,14 @@ const FloorMap = ({ floorNumber }) => {
     setShowDetails(false);
     setRoomDetails(null);
   };
+
+  if (isLoading) {
+    return (
+      <div className="w-full h-full flex items-center justify-center">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative w-full h-full flex flex-col items-center justify-center">
