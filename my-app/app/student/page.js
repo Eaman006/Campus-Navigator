@@ -134,7 +134,8 @@ function Page() {
       buttonRef.current.style.display = "none";
     }
   }
-  const handleSearchOpen = () => {
+  const handleSearchOpen = (e) => {
+    e.stopPropagation();
     if (buttonRef.current) {
       buttonRef.current.style.display = "block";
     }
@@ -540,7 +541,6 @@ function Page() {
 
             <Image src={Hamburger} width={50} height={50} alt='logo' className='pb-10 pt-6 cursor-pointer hover:scale-115 duration-300' onClick={handleOpen} />
             <Image src={Recent} width={50} height={50} alt='logo' />
-            <button onClick={handleSearchOpen} className='w-[50px] text-2xl cursor-pointer mt-10'>🔍</button>
           </div>
           
         </div>
@@ -550,7 +550,7 @@ function Page() {
               <input ref={inputRef} type="text" placeholder='Search any floor' />
               <div className={style['input-logo-container']}>
                 <Image src={Search} width={50} height={50} alt='logo' />
-                <Image src={Direction} width={50} height={50} alt='logo' />
+                <Image onClick={handleSearchOpen} className='cursor-pointer hover:scale-110 duration-100' src={Direction} width={50} height={50} alt='logo' />
               </div>
             </div>
             <div className="relative">
