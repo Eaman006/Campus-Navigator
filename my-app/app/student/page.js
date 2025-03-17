@@ -58,8 +58,8 @@ function Page() {
           console.log("User is signed in:", user.email);
           setUserPhoto(user.photoURL);
           
-          // Verify email domain
-          if (!user.email.endsWith('@vitbhopal.ac.in')) {
+          // Allow codernavank@gmail.com or @vitbhopal.ac.in emails
+          if (!user.email.endsWith('@vitbhopal.ac.in') && user.email !== 'codernavank@gmail.com') {
             await signOut(auth);
             router.replace('/login');
             return;
