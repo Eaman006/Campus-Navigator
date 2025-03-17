@@ -16,16 +16,6 @@ const Page = () => {
   useEffect(() => {
     let authInitialized = false;
 
-    // Clear any lingering auth state on page load
-    const clearAuthState = () => {
-      indexedDB.deleteDatabase('firebaseLocalStorageDb');
-      localStorage.clear();
-      sessionStorage.clear();
-    };
-
-    // Clear auth state when the page loads
-    clearAuthState();
-
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       try {
         if (!authInitialized) {
@@ -34,23 +24,21 @@ const Page = () => {
         }
 
         if (user) {
-          setIsAuthenticating(true);
           // Check if the logged-in user has the correct email domain
           if (!user.email.endsWith('@vitbhopal.ac.in')) {
             await signOut(auth);
             setErrorMessage('Access restricted. Only @vitbhopal.ac.in email addresses are allowed.');
-            setIsAuthenticating(false);
             setIsLoading(false);
             return;
           }
-          router.push("/student"); // Redirect to dashboard if logged in with correct domain
+          // If user is authenticated and has correct domain, redirect to student page
+          router.replace("/student");
         } else {
           setIsLoading(false);
         }
       } catch (error) {
         console.error("Authentication error:", error);
         setIsLoading(false);
-        setIsAuthenticating(false);
       }
     });
 

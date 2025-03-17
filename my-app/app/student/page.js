@@ -22,6 +22,7 @@ function Page() {
   const [userPhoto, setUserPhoto] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const [startFloorMap, setStartFloorMap] = useState("");
   const [endFloorMap, setEndFloorMap] = useState("");
   const [loading, setLoading] = useState(false);
@@ -47,57 +48,33 @@ function Page() {
         if (user) {
           console.log("User is signed in:", user.email);
           setUserPhoto(user.photoURL);
-
+          
           // Verify email domain
           if (!user.email.endsWith('@vitbhopal.ac.in')) {
             await signOut(auth);
-            router.push('/login');
+            router.replace('/login');
             return;
           }
+          setIsLoading(false); // Set loading to false only after successful auth
         } else {
           console.log("No user signed in, redirecting to login");
-          router.push('/login');
+          router.replace('/login');
         }
       } catch (error) {
         console.error("Authentication error:", error);
-        router.push('/login');
+        router.replace('/login');
       }
     });
 
-    // Handle tab/window close
-    const handleTabClose = () => {
-      if (auth.currentUser) {
-        signOut(auth).then(() => {
-          indexedDB.deleteDatabase('firebaseLocalStorageDb');
-          localStorage.clear();
-          sessionStorage.clear();
-        }).catch(console.error);
-      }
-    };
-
-    // Add event listeners for tab/window close
-    window.addEventListener('beforeunload', handleTabClose);
-    window.addEventListener('unload', handleTabClose);
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'hidden') {
-        handleTabClose();
-      }
-    });
-
-    return () => {
-      window.removeEventListener('beforeunload', handleTabClose);
-      window.removeEventListener('unload', handleTabClose);
-      document.removeEventListener('visibilitychange', handleTabClose);
-      unsubscribe();
-    };
+    return () => unsubscribe();
   }, [router]);
 
   // Effect for media loading
   useEffect(() => {
+    if (!isInitialized) return; // Don't start media loading until auth is initialized
+
     const handleLoad = () => {
-      if (isInitialized) {
-        setIsLoading(false);
-      }
+      setIsLoading(false);
     };
 
     const initializeMediaLoading = () => {
@@ -107,7 +84,7 @@ function Page() {
 
       mediaElements.forEach((media) => {
         if (!media) return;
-
+        
         if (media.complete || media.readyState >= 3) {
           loadedCount++;
         } else {
@@ -201,6 +178,16 @@ function Page() {
       console.error("Request failed:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Handle logout
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      router.replace('/login');
+    } catch (error) {
+      console.error("Error signing out:", error);
     }
   };
 
@@ -323,20 +310,37 @@ function Page() {
                 <Image src={Direction} width={50} height={50} alt='logo' />
               </div>
             </div>
-            <div className="relative w-10 h-10">
-              <Image
-                src={userPhoto || '/profile.png'}
-                fill
-                sizes="(max-width: 50px) 50vw, 50px"
-                alt='User profile'
-                className="rounded-full object-cover"
-                priority
-              />
+            <div className="relative">
+              <div 
+                className="relative w-10 h-10 cursor-pointer"
+                onClick={() => setShowProfileDropdown(!showProfileDropdown)}
+              >
+                <Image 
+                  src={userPhoto || '/profile.png'}
+                  fill
+                  sizes="(max-width: 50px) 50vw, 50px"
+                  alt='User profile'
+                  className="rounded-full object-cover"
+                  priority
+                />
+              </div>
+              
+              {/* Profile Dropdown */}
+              {showProfileDropdown && (
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                  <button
+                    onClick={handleLogout}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                  >
+                    Logout
+                  </button>
+                </div>
+              )}
             </div>
 
             <div className={style['bot-container']}>
-            <Image src='/Chatbot.png' width={45} height={45} alt='logo' />
-          </div>
+              <Image src='/Chatbot.png' width={45} height={45} alt='logo' />
+            </div>
           </div>
         </div>
       </div>
