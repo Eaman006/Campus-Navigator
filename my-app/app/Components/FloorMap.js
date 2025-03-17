@@ -10,12 +10,14 @@ const FloorMap = ({ floorNumber }) => {
   const [teacherDetailsHtml, setTeacherDetailsHtml] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [showTeacherDetails, setShowTeacherDetails] = useState(false);
+  const [svgError, setSvgError] = useState(false);
   const svgRef = useRef(null);
 
   // Load floor data
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
+      setSvgError(false);
       try {
         const floorModule = await import(`@/app/data/Floor${floorNumber}.js`);
         setFloorData(floorModule.default);
@@ -69,13 +71,20 @@ const FloorMap = ({ floorNumber }) => {
       }
     };
 
+    const handleSvgError = () => {
+      setSvgError(true);
+      setIsLoading(false);
+    };
+
     if (svgRef.current) {
       svgRef.current.addEventListener('load', handleSvgLoad);
+      svgRef.current.addEventListener('error', handleSvgError);
     }
 
     return () => {
       if (svgRef.current) {
         svgRef.current.removeEventListener('load', handleSvgLoad);
+        svgRef.current.removeEventListener('error', handleSvgError);
       }
     };
   }, [selectedRoom, floorNumber, floorData]);
@@ -113,18 +122,42 @@ const FloorMap = ({ floorNumber }) => {
     );
   }
 
+  if (svgError) {
+    return (
+      <div className="w-full h-full flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-500 mb-4">Error loading floor map</p>
+          <button 
+            onClick={() => window.location.reload()}
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          >
+            Reload Page
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="relative w-full h-full flex flex-col items-center justify-center">
       {/* SVG Container */}
       <div className="w-full h-full flex items-center justify-center p-4">
         <object
           ref={svgRef}
-          data={`/Floor ${floorNumber}.svg`}
+          data={`/Floor${floorNumber}.svg`}
           type="image/svg+xml"
           className="w-full h-full max-h-[70vh] object-contain"
           style={{ maxWidth: '90%' }}
         >
-          Your browser does not support SVG
+          <div className="text-center">
+            <p className="text-red-500 mb-2">Your browser does not support SVG or the file could not be loaded</p>
+            <button 
+              onClick={() => window.location.reload()}
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            >
+              Try Reloading
+            </button>
+          </div>
         </object>
 
         {/* Room Details Panel */}
