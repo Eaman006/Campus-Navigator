@@ -14,9 +14,9 @@ import FloorMap from '../Components/FloorMap';
 import Link from 'next/link';
 
 const montserrat = Montserrat({
-  subsets: ["latin"], 
-  weight: ["100", "400", "700"], 
-  variable: "--font-montserrat", 
+  subsets: ["latin"],
+  weight: ["100", "400", "700"],
+  variable: "--font-montserrat",
 });
 
 function Page() {
@@ -59,7 +59,7 @@ function Page() {
         if (user) {
           console.log("User is signed in:", user.email);
           setUserPhoto(user.photoURL);
-          
+
           // Allow codernavank@gmail.com or @vitbhopal.ac.in emails
           if (!user.email.endsWith('@vitbhopal.ac.in') && user.email !== 'codernavank@gmail.com') {
             await signOut(auth);
@@ -95,7 +95,7 @@ function Page() {
 
       mediaElements.forEach((media) => {
         if (!media) return;
-        
+
         if (media.complete || media.readyState >= 3) {
           loadedCount++;
         } else {
@@ -301,7 +301,7 @@ function Page() {
 
             {/* Swap Button */}
             <button onClick={swapFloors} className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 cursor-pointer">
-              <Image src="/Swap.png" alt="Swap" width={20} height={20}/>
+              <Image src="/Swap.png" alt="Swap" width={20} height={20} />
             </button>
           </div>
           {/* Search Button */}
@@ -353,17 +353,16 @@ function Page() {
             <div className={[style['hamburger-container'], isOpen ? (style.open) : (style.close), montserrat.variable].join(' ')}>
               <div className='flex justify-between items-center border-b-2'>
                 <p className='inline-block font-bold text-2xl'>Campus Navigator</p>
-                <span onClick={handleOpen} className='cursor-pointer hover:scale-115 duration-300 inline-block'><Image src='/Close.png' width={30} height={30} alt='close'/></span>
+                <span onClick={handleOpen} className='cursor-pointer hover:scale-115 duration-300 inline-block'><Image src='/Close.png' width={30} height={30} alt='close' /></span>
               </div>
               <div className='w-full mt-8 cursor-pointer flex items-center' onClick={handleHomeClick}>
-                <span><Image src='/Home.png' width={30} height={30} alt='home'/></span>
+                <span><Image src='/Home.png' width={30} height={30} alt='home' /></span>
                 <span className={isHomeSelected ? 'text-blue-600' : ''}> Home</span>
               </div>
               <div className='relative'>
-                <div 
-                  className={`w-full mt-4 relative cursor-pointer flex items-center ${
-                    selectedBuilding === 'Academic Block' ? 'text-blue-600' : ''
-                  }`}
+                <div
+                  className={`w-full mt-4 relative cursor-pointer flex items-center ${selectedBuilding === 'Academic Block' ? 'text-blue-600' : ''
+                    }`}
                   onClick={() => {
                     setShowAcademicDropdown(!showAcademicDropdown);
                     setShowFloorDropdown(false);
@@ -372,29 +371,28 @@ function Page() {
                     setShowFloorDropdown4(false);
                   }}
                 >
-                  <span><Image src='/block.png' width={20} height={20} alt='block'/></span>
+                  <span><Image src='/block.png' width={20} height={20} alt='block' /></span>
                   <span>&nbsp;</span>
                   Academic Block
                   <span className='absolute right-0'>
-                    <Image 
-                      src='/downArrow.png' 
-                      width={30} 
-                      height={30} 
+                    <Image
+                      src='/downArrow.png'
+                      width={30}
+                      height={30}
                       alt='dropdown'
                       className={`transform transition-transform duration-200 ${showAcademicDropdown ? 'rotate-180' : ''}`}
                     />
                   </span>
                 </div>
-                
+
                 {/* Floor Dropdown Menu */}
                 {showAcademicDropdown && (
                   <div className="w-full bg-white border-l-2 border-blue-500 ml-4">
                     {[0, 1, 2, 3, 4, 5].map((floor) => (
                       <div
                         key={floor}
-                        className={`px-4 py-2 text-sm cursor-pointer hover:bg-gray-100 flex items-center gap-2 ${
-                          selectedFloor === floor && selectedBuilding === 'Academic Block' ? 'bg-blue-50 text-blue-600' : ''
-                        }`}
+                        className={`px-4 py-2 text-sm cursor-pointer hover:bg-gray-100 flex items-center gap-2 ${selectedFloor === floor && selectedBuilding === 'Academic Block' ? 'bg-blue-50 text-blue-600' : ''
+                          }`}
                         onClick={() => handleFloorSelect(floor, 'Academic Block')}
                       >
                         <span>Floor {floor}</span>
@@ -406,10 +404,9 @@ function Page() {
 
               {/* Academic Block 2 */}
               <div className='relative'>
-                <div 
-                  className={`w-full mt-4 relative cursor-pointer flex items-center ${
-                    selectedBuilding === 'Academic Block 2' ? 'text-blue-600' : ''
-                  }`}
+                <div
+                  className={`w-full mt-4 relative cursor-pointer flex items-center ${selectedBuilding === 'Academic Block 2' ? 'text-blue-600' : ''
+                    }`}
                   onClick={() => {
                     setShowFloorDropdown2(!showFloorDropdown2);
                     setShowFloorDropdown(false);
@@ -417,29 +414,28 @@ function Page() {
                     setShowFloorDropdown4(false);
                   }}
                 >
-                  <span><Image src='/block.png' width={20} height={20} alt='block'/></span>
+                  <span><Image src='/block.png' width={20} height={20} alt='block' /></span>
                   <span>&nbsp;</span>
                   Academic Block 2
                   <span className='absolute right-0'>
-                    <Image 
-                      src='/downArrow.png' 
-                      width={30} 
-                      height={30} 
+                    <Image
+                      src='/downArrow.png'
+                      width={30}
+                      height={30}
                       alt='dropdown'
                       className={`transform transition-transform duration-200 ${showFloorDropdown2 ? 'rotate-180' : ''}`}
                     />
                   </span>
                 </div>
-                
+
                 {/* Floor Dropdown Menu */}
                 {showFloorDropdown2 && (
                   <div className="w-full bg-white border-l-2 border-blue-500 ml-4">
                     {[0, 1, 2, 3, 4, 5].map((floor) => (
                       <div
                         key={floor}
-                        className={`px-4 py-2 text-sm cursor-pointer hover:bg-gray-100 flex items-center gap-2 ${
-                          selectedFloor === floor && selectedBuilding === 'Academic Block 2' ? 'bg-blue-50 text-blue-600' : ''
-                        }`}
+                        className={`px-4 py-2 text-sm cursor-pointer hover:bg-gray-100 flex items-center gap-2 ${selectedFloor === floor && selectedBuilding === 'Academic Block 2' ? 'bg-blue-50 text-blue-600' : ''
+                          }`}
                         onClick={() => handleFloorSelect(floor, 'Academic Block 2')}
                       >
                         <span>Floor {floor}</span>
@@ -451,10 +447,9 @@ function Page() {
 
               {/* Architecture Building */}
               <div className='relative'>
-                <div 
-                  className={`w-full mt-4 relative cursor-pointer flex items-center ${
-                    selectedBuilding === 'Architecture Building' ? 'text-blue-600' : ''
-                  }`}
+                <div
+                  className={`w-full mt-4 relative cursor-pointer flex items-center ${selectedBuilding === 'Architecture Building' ? 'text-blue-600' : ''
+                    }`}
                   onClick={() => {
                     setShowFloorDropdown3(!showFloorDropdown3);
                     setShowFloorDropdown(false);
@@ -462,29 +457,28 @@ function Page() {
                     setShowFloorDropdown4(false);
                   }}
                 >
-                  <span><Image src='/block.png' width={20} height={20} alt='block'/></span>
+                  <span><Image src='/block.png' width={20} height={20} alt='block' /></span>
                   <span>&nbsp;</span>
                   Architecture Building
                   <span className='absolute right-0'>
-                    <Image 
-                      src='/downArrow.png' 
-                      width={30} 
-                      height={30} 
+                    <Image
+                      src='/downArrow.png'
+                      width={30}
+                      height={30}
                       alt='dropdown'
                       className={`transform transition-transform duration-200 ${showFloorDropdown3 ? 'rotate-180' : ''}`}
                     />
                   </span>
                 </div>
-                
+
                 {/* Floor Dropdown Menu */}
                 {showFloorDropdown3 && (
                   <div className="w-full bg-white border-l-2 border-blue-500 ml-4">
                     {[0, 1, 2, 3, 4, 5].map((floor) => (
                       <div
                         key={floor}
-                        className={`px-4 py-2 text-sm cursor-pointer hover:bg-gray-100 flex items-center gap-2 ${
-                          selectedFloor === floor && selectedBuilding === 'Architecture Building' ? 'bg-blue-50 text-blue-600' : ''
-                        }`}
+                        className={`px-4 py-2 text-sm cursor-pointer hover:bg-gray-100 flex items-center gap-2 ${selectedFloor === floor && selectedBuilding === 'Architecture Building' ? 'bg-blue-50 text-blue-600' : ''
+                          }`}
                         onClick={() => handleFloorSelect(floor, 'Architecture Building')}
                       >
                         <span>Floor {floor}</span>
@@ -496,10 +490,9 @@ function Page() {
 
               {/* Lab Complex */}
               <div className='relative'>
-                <div 
-                  className={`w-full mt-4 relative cursor-pointer flex items-center ${
-                    selectedBuilding === 'Lab Complex' ? 'text-blue-600' : ''
-                  }`}
+                <div
+                  className={`w-full mt-4 relative cursor-pointer flex items-center ${selectedBuilding === 'Lab Complex' ? 'text-blue-600' : ''
+                    }`}
                   onClick={() => {
                     setShowFloorDropdown4(!showFloorDropdown4);
                     setShowFloorDropdown(false);
@@ -507,29 +500,28 @@ function Page() {
                     setShowFloorDropdown3(false);
                   }}
                 >
-                  <span><Image src='/block.png' width={20} height={20} alt='block'/></span>
+                  <span><Image src='/block.png' width={20} height={20} alt='block' /></span>
                   <span>&nbsp;</span>
                   Lab Complex
                   <span className='absolute right-0'>
-                    <Image 
-                      src='/downArrow.png' 
-                      width={30} 
-                      height={30} 
+                    <Image
+                      src='/downArrow.png'
+                      width={30}
+                      height={30}
                       alt='dropdown'
                       className={`transform transition-transform duration-200 ${showFloorDropdown4 ? 'rotate-180' : ''}`}
                     />
                   </span>
                 </div>
-                
+
                 {/* Floor Dropdown Menu */}
                 {showFloorDropdown4 && (
                   <div className="w-full bg-white border-l-2 border-blue-500 ml-4">
                     {[0, 1, 2, 3, 4, 5].map((floor) => (
                       <div
                         key={floor}
-                        className={`px-4 py-2 text-sm cursor-pointer hover:bg-gray-100 flex items-center gap-2 ${
-                          selectedFloor === floor && selectedBuilding === 'Lab Complex' ? 'bg-blue-50 text-blue-600' : ''
-                        }`}
+                        className={`px-4 py-2 text-sm cursor-pointer hover:bg-gray-100 flex items-center gap-2 ${selectedFloor === floor && selectedBuilding === 'Lab Complex' ? 'bg-blue-50 text-blue-600' : ''
+                          }`}
                         onClick={() => handleFloorSelect(floor, 'Lab Complex')}
                       >
                         <span>Floor {floor}</span>
@@ -543,7 +535,7 @@ function Page() {
             <Image src={Hamburger} width={50} height={50} alt='logo' className='pb-10 pt-6 cursor-pointer hover:scale-115 duration-300' onClick={handleOpen} />
             <Image src={Recent} width={50} height={50} alt='logo' />
           </div>
-          
+
         </div>
         <div className={style['container-right']}>
           <div className={style['sub-container-right']}>
@@ -555,11 +547,11 @@ function Page() {
               </div>
             </div>
             <div className="relative">
-              <div 
+              <div
                 className="relative w-10 h-10 cursor-pointer"
                 onClick={() => setShowProfileDropdown(!showProfileDropdown)}
               >
-                <Image 
+                <Image
                   src={userPhoto || '/profile.png'}
                   fill
                   sizes="(max-width: 50px) 50vw, 50px"
@@ -568,7 +560,7 @@ function Page() {
                   priority
                 />
               </div>
-              
+
               {/* Profile Dropdown */}
               {showProfileDropdown && (
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
@@ -581,10 +573,11 @@ function Page() {
                 </div>
               )}
             </div>
-
-            <div className={style['bot-container']}>
-              <Link href="/chatbot"><Image src='/Chatbot.png' width={45} height={45} alt='logo' /></Link>
-            </div>
+            <Link href="/chatbot">
+              <div className={style['bot-container']}>
+                <Image src='/Chatbot.png' width={45} height={45} alt='logo' />
+              </div>
+            </Link>
           </div>
 
           {/* Floor Map Display */}
@@ -607,13 +600,13 @@ function Page() {
                     ✕
                   </button>
                 </div>
-                <FloorMap 
-                  floorNumber={selectedFloor} 
+                <FloorMap
+                  floorNumber={selectedFloor}
                   academicBlock={
                     selectedBuilding === 'Academic Block' ? 1 :
-                    selectedBuilding === 'Academic Block 2' ? 2 :
-                    selectedBuilding === 'Architecture Building' ? 3 :
-                    selectedBuilding === 'Lab Complex' ? 4 : 1
+                      selectedBuilding === 'Academic Block 2' ? 2 :
+                        selectedBuilding === 'Architecture Building' ? 3 :
+                          selectedBuilding === 'Lab Complex' ? 4 : 1
                   }
                 />
               </div>
