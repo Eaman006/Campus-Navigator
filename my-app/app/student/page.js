@@ -305,7 +305,12 @@ function Page() {
               <div className='relative'>
                 <div 
                   className='w-full mt-4 relative cursor-pointer flex items-center'
-                  onClick={() => setShowFloorDropdown(!showFloorDropdown)}
+                  onClick={() => {
+                    setShowFloorDropdown(!showFloorDropdown);
+                    setShowFloorDropdown2(false);
+                    setShowFloorDropdown3(false);
+                    setShowFloorDropdown4(false);
+                  }}
                 >
                   <span><Image src='/block.png' width={20} height={20} alt='block'/></span>
                   <span>&nbsp;</span>
@@ -343,7 +348,12 @@ function Page() {
               <div className='relative'>
                 <div 
                   className='w-full mt-4 relative cursor-pointer flex items-center'
-                  onClick={() => setShowFloorDropdown2(!showFloorDropdown2)}
+                  onClick={() => {
+                    setShowFloorDropdown2(!showFloorDropdown2);
+                    setShowFloorDropdown(false);
+                    setShowFloorDropdown3(false);
+                    setShowFloorDropdown4(false);
+                  }}
                 >
                   <span><Image src='/block.png' width={20} height={20} alt='block'/></span>
                   <span>&nbsp;</span>
@@ -381,7 +391,12 @@ function Page() {
               <div className='relative'>
                 <div 
                   className='w-full mt-4 relative cursor-pointer flex items-center'
-                  onClick={() => setShowFloorDropdown3(!showFloorDropdown3)}
+                  onClick={() => {
+                    setShowFloorDropdown3(!showFloorDropdown3);
+                    setShowFloorDropdown(false);
+                    setShowFloorDropdown2(false);
+                    setShowFloorDropdown4(false);
+                  }}
                 >
                   <span><Image src='/block.png' width={20} height={20} alt='block'/></span>
                   <span>&nbsp;</span>
@@ -419,7 +434,12 @@ function Page() {
               <div className='relative'>
                 <div 
                   className='w-full mt-4 relative cursor-pointer flex items-center'
-                  onClick={() => setShowFloorDropdown4(!showFloorDropdown4)}
+                  onClick={() => {
+                    setShowFloorDropdown4(!showFloorDropdown4);
+                    setShowFloorDropdown(false);
+                    setShowFloorDropdown2(false);
+                    setShowFloorDropdown3(false);
+                  }}
                 >
                   <span><Image src='/block.png' width={20} height={20} alt='block'/></span>
                   <span>&nbsp;</span>
