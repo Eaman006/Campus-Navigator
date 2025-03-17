@@ -1,4 +1,4 @@
-Here’s a **README.md** file for your **Campus-Navigator** project. It includes setup instructions, features, technologies, and how to contribute.  
+Here’s a **README.md** file for Our **Campus-Navigator** project. It includes setup instructions, features, technologies, and how to contribute.  
 
 ---
 
