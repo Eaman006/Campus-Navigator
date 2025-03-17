@@ -36,10 +36,9 @@ function Page() {
   const [showFloorDropdown2, setShowFloorDropdown2] = useState(false);
   const [showFloorDropdown3, setShowFloorDropdown3] = useState(false);
   const [showFloorDropdown4, setShowFloorDropdown4] = useState(false);
+  const [selectedBuilding, setSelectedBuilding] = useState(null);
   const [selectedFloor, setSelectedFloor] = useState(null);
-  const [selectedFloor2, setSelectedFloor2] = useState(null);
-  const [selectedFloor3, setSelectedFloor3] = useState(null);
-  const [selectedFloor4, setSelectedFloor4] = useState(null);
+  const [isHomeSelected, setIsHomeSelected] = useState(true);
 
   // Effect for authentication and initialization
   useEffect(() => {
@@ -198,10 +197,30 @@ function Page() {
     }
   };
 
-  const handleFloorSelect = (floor, setter) => {
-    setter(floor);
-    // Here you can add logic to handle floor selection
-    console.log(`Selected floor: ${floor}`);
+  const handleFloorSelect = (floor, building) => {
+    setSelectedFloor(floor);
+    setSelectedBuilding(building);
+    // Close all dropdowns after selection
+    setShowFloorDropdown(false);
+    setShowFloorDropdown2(false);
+    setShowFloorDropdown3(false);
+    setShowFloorDropdown4(false);
+    // Deselect home when a building is selected
+    setIsHomeSelected(false);
+    console.log(`Selected ${building} Floor ${floor}`);
+  };
+
+  const handleHomeClick = () => {
+    // Deselect all building and floor selections
+    setSelectedBuilding(null);
+    setSelectedFloor(null);
+    // Close all dropdowns
+    setShowFloorDropdown(false);
+    setShowFloorDropdown2(false);
+    setShowFloorDropdown3(false);
+    setShowFloorDropdown4(false);
+    // Select home
+    setIsHomeSelected(true);
   };
 
   // Show loading spinner while initializing
@@ -301,10 +320,15 @@ function Page() {
                 <p className='inline-block font-bold text-2xl'>Campus Navigator</p>
                 <span onClick={handleOpen} className='cursor-pointer hover:scale-115 duration-300 inline-block'><Image src='/Close.png' width={30} height={30} alt='close'/></span>
               </div>
-              <div className='w-full mt-8 cursor-pointer flex items-center'><span><Image src='/Home.png' width={30} height={30} alt='🔽'/></span> Home</div>
+              <div className='w-full mt-8 cursor-pointer flex items-center' onClick={handleHomeClick}>
+                <span><Image src='/Home.png' width={30} height={30} alt='home'/></span>
+                <span className={isHomeSelected ? 'text-blue-600' : ''}> Home</span>
+              </div>
               <div className='relative'>
                 <div 
-                  className='w-full mt-4 relative cursor-pointer flex items-center'
+                  className={`w-full mt-4 relative cursor-pointer flex items-center ${
+                    selectedBuilding === 'Academic Block' ? 'text-blue-600' : ''
+                  }`}
                   onClick={() => {
                     setShowFloorDropdown(!showFloorDropdown);
                     setShowFloorDropdown2(false);
@@ -333,9 +357,9 @@ function Page() {
                       <div
                         key={floor}
                         className={`px-4 py-2 text-sm cursor-pointer hover:bg-gray-100 flex items-center gap-2 ${
-                          selectedFloor === floor ? 'bg-blue-50 text-blue-600' : ''
+                          selectedFloor === floor && selectedBuilding === 'Academic Block' ? 'bg-blue-50 text-blue-600' : ''
                         }`}
-                        onClick={() => handleFloorSelect(floor, setSelectedFloor)}
+                        onClick={() => handleFloorSelect(floor, 'Academic Block')}
                       >
                         <span>Floor {floor}</span>
                       </div>
@@ -347,7 +371,9 @@ function Page() {
               {/* Academic Block 2 */}
               <div className='relative'>
                 <div 
-                  className='w-full mt-4 relative cursor-pointer flex items-center'
+                  className={`w-full mt-4 relative cursor-pointer flex items-center ${
+                    selectedBuilding === 'Academic Block 2' ? 'text-blue-600' : ''
+                  }`}
                   onClick={() => {
                     setShowFloorDropdown2(!showFloorDropdown2);
                     setShowFloorDropdown(false);
@@ -376,9 +402,9 @@ function Page() {
                       <div
                         key={floor}
                         className={`px-4 py-2 text-sm cursor-pointer hover:bg-gray-100 flex items-center gap-2 ${
-                          selectedFloor2 === floor ? 'bg-blue-50 text-blue-600' : ''
+                          selectedFloor === floor && selectedBuilding === 'Academic Block 2' ? 'bg-blue-50 text-blue-600' : ''
                         }`}
-                        onClick={() => handleFloorSelect(floor, setSelectedFloor2)}
+                        onClick={() => handleFloorSelect(floor, 'Academic Block 2')}
                       >
                         <span>Floor {floor}</span>
                       </div>
@@ -390,7 +416,9 @@ function Page() {
               {/* Architecture Building */}
               <div className='relative'>
                 <div 
-                  className='w-full mt-4 relative cursor-pointer flex items-center'
+                  className={`w-full mt-4 relative cursor-pointer flex items-center ${
+                    selectedBuilding === 'Architecture Building' ? 'text-blue-600' : ''
+                  }`}
                   onClick={() => {
                     setShowFloorDropdown3(!showFloorDropdown3);
                     setShowFloorDropdown(false);
@@ -419,9 +447,9 @@ function Page() {
                       <div
                         key={floor}
                         className={`px-4 py-2 text-sm cursor-pointer hover:bg-gray-100 flex items-center gap-2 ${
-                          selectedFloor3 === floor ? 'bg-blue-50 text-blue-600' : ''
+                          selectedFloor === floor && selectedBuilding === 'Architecture Building' ? 'bg-blue-50 text-blue-600' : ''
                         }`}
-                        onClick={() => handleFloorSelect(floor, setSelectedFloor3)}
+                        onClick={() => handleFloorSelect(floor, 'Architecture Building')}
                       >
                         <span>Floor {floor}</span>
                       </div>
@@ -433,7 +461,9 @@ function Page() {
               {/* Lab Complex */}
               <div className='relative'>
                 <div 
-                  className='w-full mt-4 relative cursor-pointer flex items-center'
+                  className={`w-full mt-4 relative cursor-pointer flex items-center ${
+                    selectedBuilding === 'Lab Complex' ? 'text-blue-600' : ''
+                  }`}
                   onClick={() => {
                     setShowFloorDropdown4(!showFloorDropdown4);
                     setShowFloorDropdown(false);
@@ -462,9 +492,9 @@ function Page() {
                       <div
                         key={floor}
                         className={`px-4 py-2 text-sm cursor-pointer hover:bg-gray-100 flex items-center gap-2 ${
-                          selectedFloor4 === floor ? 'bg-blue-50 text-blue-600' : ''
+                          selectedFloor === floor && selectedBuilding === 'Lab Complex' ? 'bg-blue-50 text-blue-600' : ''
                         }`}
-                        onClick={() => handleFloorSelect(floor, setSelectedFloor4)}
+                        onClick={() => handleFloorSelect(floor, 'Lab Complex')}
                       >
                         <span>Floor {floor}</span>
                       </div>
