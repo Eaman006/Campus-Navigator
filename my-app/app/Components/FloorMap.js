@@ -1,13 +1,14 @@
 "use client"
 import React, { useEffect, useRef, useState } from 'react';
 
-const FloorMap = () => {
+const FloorMap = ({ floorNumber }) => {
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [showDetails, setShowDetails] = useState(false);
   const [roomDetails, setRoomDetails] = useState(null);
   const svgRef = useRef(null);
 
-  const roomData = {
+  // Room data for Floor 0
+  const floor0RoomData = {
     room012: { details: "Room 012: Auditorium1<br>Features: Air Conditioned, Projector, Wi-Fi", hasTeachers: false },
     room004: { details: "Room 004: Teacher's Cabin<br>Features: Desks, Computers, Wi-Fi", hasTeachers: true },
     room003: { details: "Room 003: Classroom<br>Features: Desks, Computers, Wi-Fi", hasTeachers: false },
@@ -38,6 +39,19 @@ const FloorMap = () => {
     roomRamsai: { details: "Ramasai Balswami's Office", hasTeachers: false },
     roomStore: { details: "Store room3", hasTeachers: false },
   };
+
+  // Room data for Floor 1
+  const floor1RoomData = {
+    room101: { details: "Room 101: Computer Lab<br>Features: Computers, Wi-Fi, Air Conditioned", hasTeachers: false },
+    room102: { details: "Room 102: Physics Lab<br>Features: Lab Equipment, Wi-Fi", hasTeachers: true },
+    room103: { details: "Room 103: Chemistry Lab<br>Features: Lab Equipment, Safety Gear", hasTeachers: true },
+    room104: { details: "Room 104: Classroom<br>Features: Projector, Wi-Fi", hasTeachers: false },
+    room105: { details: "Room 105: Faculty Room<br>Features: Desks, Computers", hasTeachers: true },
+    room106: { details: "Room 106: Conference Room<br>Features: Projector, Video Conferencing", hasTeachers: false },
+  };
+
+  // Select room data based on floor number
+  const roomData = floorNumber === 0 ? floor0RoomData : floor1RoomData;
 
   useEffect(() => {
     const handleSvgLoad = () => {
@@ -85,7 +99,7 @@ const FloorMap = () => {
         svgRef.current.removeEventListener('load', handleSvgLoad);
       }
     };
-  }, [selectedRoom]);
+  }, [selectedRoom, floorNumber, roomData]);
 
   const handleCloseDetails = () => {
     if (selectedRoom) {
@@ -102,7 +116,7 @@ const FloorMap = () => {
       <div className="w-full h-full flex items-center justify-center p-4">
         <object
           ref={svgRef}
-          data="/Floor 0.svg"
+          data={`/Floor ${floorNumber}.svg`}
           type="image/svg+xml"
           className="w-full h-full max-h-[70vh] object-contain"
           style={{ maxWidth: '90%' }}
@@ -110,7 +124,7 @@ const FloorMap = () => {
           Your browser does not support SVG
         </object>
 
-        {/* Room Details Panel - Now positioned inside the map container */}
+        {/* Room Details Panel */}
         {showDetails && roomDetails && (
           <div className="absolute left-4 top-4 bg-white rounded-lg shadow-lg p-4 w-72 z-10">
             <div className="flex justify-between items-start mb-4">

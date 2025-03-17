@@ -41,6 +41,7 @@ function Page() {
   const [selectedFloor, setSelectedFloor] = useState(null);
   const [isHomeSelected, setIsHomeSelected] = useState(true);
   const [showFloorMap, setShowFloorMap] = useState(false);
+  const [showAcademicDropdown, setShowAcademicDropdown] = useState(false);
 
   // Effect for authentication and initialization
   useEffect(() => {
@@ -199,19 +200,11 @@ function Page() {
     }
   };
 
-  const handleFloorSelect = (floor, building) => {
-    setSelectedFloor(floor);
-    setSelectedBuilding(building);
-    // Close all dropdowns after selection
-    setShowFloorDropdown(false);
-    setShowFloorDropdown2(false);
-    setShowFloorDropdown3(false);
-    setShowFloorDropdown4(false);
-    // Deselect home when a building is selected
-    setIsHomeSelected(false);
-    // Show floor map
+  const handleFloorSelect = (floorNumber) => {
+    setSelectedFloor(floorNumber);
+    setSelectedBuilding('Academic Block');
+    setShowAcademicDropdown(false);
     setShowFloorMap(true);
-    console.log(`Selected ${building} Floor ${floor}`);
   };
 
   const handleHomeClick = () => {
@@ -339,7 +332,8 @@ function Page() {
                     selectedBuilding === 'Academic Block' ? 'text-blue-600' : ''
                   }`}
                   onClick={() => {
-                    setShowFloorDropdown(!showFloorDropdown);
+                    setShowAcademicDropdown(!showAcademicDropdown);
+                    setShowFloorDropdown(false);
                     setShowFloorDropdown2(false);
                     setShowFloorDropdown3(false);
                     setShowFloorDropdown4(false);
@@ -354,13 +348,13 @@ function Page() {
                       width={30} 
                       height={30} 
                       alt='dropdown'
-                      className={`transform transition-transform duration-200 ${showFloorDropdown ? 'rotate-180' : ''}`}
+                      className={`transform transition-transform duration-200 ${showAcademicDropdown ? 'rotate-180' : ''}`}
                     />
                   </span>
                 </div>
                 
                 {/* Floor Dropdown Menu */}
-                {showFloorDropdown && (
+                {showAcademicDropdown && (
                   <div className="w-full bg-white border-l-2 border-blue-500 ml-4">
                     {[0, 1, 2, 3, 4, 5].map((floor) => (
                       <div
@@ -368,7 +362,7 @@ function Page() {
                         className={`px-4 py-2 text-sm cursor-pointer hover:bg-gray-100 flex items-center gap-2 ${
                           selectedFloor === floor && selectedBuilding === 'Academic Block' ? 'bg-blue-50 text-blue-600' : ''
                         }`}
-                        onClick={() => handleFloorSelect(floor, 'Academic Block')}
+                        onClick={() => handleFloorSelect(floor)}
                       >
                         <span>Floor {floor}</span>
                       </div>
@@ -413,7 +407,7 @@ function Page() {
                         className={`px-4 py-2 text-sm cursor-pointer hover:bg-gray-100 flex items-center gap-2 ${
                           selectedFloor === floor && selectedBuilding === 'Academic Block 2' ? 'bg-blue-50 text-blue-600' : ''
                         }`}
-                        onClick={() => handleFloorSelect(floor, 'Academic Block 2')}
+                        onClick={() => handleFloorSelect(floor)}
                       >
                         <span>Floor {floor}</span>
                       </div>
@@ -458,7 +452,7 @@ function Page() {
                         className={`px-4 py-2 text-sm cursor-pointer hover:bg-gray-100 flex items-center gap-2 ${
                           selectedFloor === floor && selectedBuilding === 'Architecture Building' ? 'bg-blue-50 text-blue-600' : ''
                         }`}
-                        onClick={() => handleFloorSelect(floor, 'Architecture Building')}
+                        onClick={() => handleFloorSelect(floor)}
                       >
                         <span>Floor {floor}</span>
                       </div>
@@ -503,7 +497,7 @@ function Page() {
                         className={`px-4 py-2 text-sm cursor-pointer hover:bg-gray-100 flex items-center gap-2 ${
                           selectedFloor === floor && selectedBuilding === 'Lab Complex' ? 'bg-blue-50 text-blue-600' : ''
                         }`}
-                        onClick={() => handleFloorSelect(floor, 'Lab Complex')}
+                        onClick={() => handleFloorSelect(floor)}
                       >
                         <span>Floor {floor}</span>
                       </div>
@@ -565,22 +559,23 @@ function Page() {
           <div className="w-full h-[calc(100%-4rem)] mt-4">
             {isLoading ? (
               <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500"></div>
-            ) : showFloorMap ? (
+            ) : showFloorMap && selectedFloor !== null ? (
               <div className="w-full h-full">
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-xl font-bold">
                     {selectedBuilding} - Floor {selectedFloor}
                   </h2>
                   <button
-                    onClick={() => setShowFloorMap(false)}
+                    onClick={() => {
+                      setShowFloorMap(false);
+                      setSelectedFloor(null);
+                    }}
                     className="text-gray-500 hover:text-gray-700"
                   >
                     ✕
                   </button>
                 </div>
-                <div className="w-full h-[calc(100%-4rem)] bg-white rounded-lg shadow-lg overflow-hidden">
-                  <FloorMap />
-                </div>
+                <FloorMap floorNumber={selectedFloor} />
               </div>
             ) : (
               <div className='w-full h-full flex items-center justify-center'>
