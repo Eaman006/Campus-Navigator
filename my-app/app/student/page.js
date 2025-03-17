@@ -11,6 +11,7 @@ import { onAuthStateChanged, signOut } from "firebase/auth";
 import { useRouter } from 'next/navigation';
 import { Montserrat } from "next/font/google";
 import FloorMap from '../Components/FloorMap';
+import Link from 'next/link';
 
 const montserrat = Montserrat({
   subsets: ["latin"], 
@@ -582,7 +583,7 @@ function Page() {
             </div>
 
             <div className={style['bot-container']}>
-              <Image src='/Chatbot.png' width={45} height={45} alt='logo' />
+              <Link href="/chatbot"><Image src='/Chatbot.png' width={45} height={45} alt='logo' /></Link>
             </div>
           </div>
 
