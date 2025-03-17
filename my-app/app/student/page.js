@@ -32,7 +32,8 @@ function Page() {
   const mapRef = useRef(null);
   const inputRef = useRef(null);
   const router = useRouter();
-
+  const [showFloorDropdown, setShowFloorDropdown] = useState(false);
+  const [selectedFloor, setSelectedFloor] = useState(null);
 
   // Effect for authentication and initialization
   useEffect(() => {
@@ -191,6 +192,13 @@ function Page() {
     }
   };
 
+  const handleFloorSelect = (floor) => {
+    setSelectedFloor(floor);
+    setShowFloorDropdown(false);
+    // Here you can add logic to handle floor selection
+    console.log(`Selected floor: ${floor}`);
+  };
+
   // Show loading spinner while initializing
   if (!isInitialized || isLoading) {
     return (
@@ -289,7 +297,43 @@ function Page() {
                 <span onClick={handleOpen} className='cursor-pointer hover:scale-115 duration-300 inline-block'><Image src='/Close.png' width={30} height={30} alt='close'/></span>
               </div>
               <div className='w-full mt-8 cursor-pointer flex items-center'><span><Image src='/Home.png' width={30} height={30} alt='🔽'/></span> Home</div>
-              <div className='w-full mt-4 relative cursor-pointer flex items-center'><span><Image src='/block.png' width={20} height={20} alt='🔽'/></span> <span>&nbsp;</span> Academic Block <span className='absolute right-0'><Image src='/downArrow.png' width={30} height={30} alt='🔽'/></span></div>
+              <div className='relative'>
+                <div 
+                  className='w-full mt-4 relative cursor-pointer flex items-center'
+                  onClick={() => setShowFloorDropdown(!showFloorDropdown)}
+                >
+                  <span><Image src='/block.png' width={20} height={20} alt='block'/></span>
+                  <span>&nbsp;</span>
+                  Academic Block
+                  <span className='absolute right-0'>
+                    <Image 
+                      src='/downArrow.png' 
+                      width={30} 
+                      height={30} 
+                      alt='dropdown'
+                      className={`transform transition-transform duration-200 ${showFloorDropdown ? 'rotate-180' : ''}`}
+                    />
+                  </span>
+                </div>
+                
+                {/* Floor Dropdown Menu */}
+                {showFloorDropdown && (
+                  <div className="w-full bg-white border-l-2 border-blue-500 ml-4">
+                    {[0, 1, 2, 3, 4, 5].map((floor) => (
+                      <div
+                        key={floor}
+                        className={`px-4 py-2 text-sm cursor-pointer hover:bg-gray-100 flex items-center gap-2 ${
+                          selectedFloor === floor ? 'bg-blue-50' : ''
+                        }`}
+                        onClick={() => handleFloorSelect(floor)}
+                      >
+                        
+                        <span>Floor {floor}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
               <div className='w-full mt-4 relative cursor-pointer flex items-center'><span><Image src='/block.png' width={20} height={20} alt='🔽'/></span> <span>&nbsp;</span> Academic Block 2 <span className='absolute right-0'><Image src='/downArrow.png' width={30} height={30} alt='🔽'/></span></div>
               <div className='w-full mt-4 relative cursor-pointer flex items-center'><span><Image src='/block.png' width={20} height={20} alt='🔽'/></span> <span>&nbsp;</span> Architecture Building <span className='absolute right-0'><Image src='/downArrow.png' width={30} height={30} alt='🔽'/></span></div>
               <div className='w-full mt-4 relative cursor-pointer flex items-center'><span><Image src='/block.png' width={20} height={20} alt='🔽'/></span> <span>&nbsp;</span> Lab Complex <span className='absolute right-0'><Image src='/downArrow.png' width={30} height={30} alt='🔽'/></span></div>
