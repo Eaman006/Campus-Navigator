@@ -137,7 +137,7 @@ const FloorMap = ({ floorNumber, academicBlock = 1 }) => {
     );
   }
 
-  // Show "Map not available" message for Academic Block 2 and other buildings
+  // Show "Map not available" message for all buildings except Academic Block 1
   if (academicBlock !== 1) {
     return (
       <div className="w-full h-full flex items-center justify-center">

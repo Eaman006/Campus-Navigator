@@ -586,7 +586,12 @@ function Page() {
                 </div>
                 <FloorMap 
                   floorNumber={selectedFloor} 
-                  academicBlock={selectedBuilding === 'Academic Block 2' ? 2 : 1}
+                  academicBlock={
+                    selectedBuilding === 'Academic Block' ? 1 :
+                    selectedBuilding === 'Academic Block 2' ? 2 :
+                    selectedBuilding === 'Architecture Building' ? 3 :
+                    selectedBuilding === 'Lab Complex' ? 4 : 1
+                  }
                 />
               </div>
             ) : (
