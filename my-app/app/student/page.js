@@ -264,10 +264,10 @@ function Page() {
     <div className="relative w-full h-screen select-none">
       <div className={style['container']}>
 
-        <div ref={buttonRef} className="absolute hidden top-45 left-40 bg-white text-black shadow-lg rounded-lg p-4 w-96">
+        <div ref={buttonRef} className="absolute hidden top-25 left-40 bg-white text-black shadow-lg rounded-lg p-4 w-96 z-50">
           {/* Close Button */}
           <div className="flex justify-end">
-            <button className="text-gray-500 hover:text-black cursor-pointer" onClick={handleSearchClose}>&times;</button>
+            <button className="text-gray-500 hover:text-black cursor-pointer text-2xl" onClick={handleSearchClose}>&times;</button>
           </div>
 
           {/* Input Section */}
@@ -299,8 +299,8 @@ function Page() {
             </div>
 
             {/* Swap Button */}
-            <button onClick={swapFloors} className="p-2 rounded-full bg-gray-200 hover:bg-gray-300">
-              <Image src="/Swap.png" alt="Swap" width={20} height={20} />
+            <button onClick={swapFloors} className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 cursor-pointer">
+              <Image src="/Swap.png" alt="Swap" width={20} height={20}/>
             </button>
           </div>
           {/* Search Button */}
@@ -313,7 +313,7 @@ function Page() {
           </button>
         </div>
 
-        <div className="flex gap-6 mt-6 absolute top-5 left-150">
+        <div className="flex gap-6 mt-6 absolute top-5 left-150 z-50">
           {/* Map Container */}
           <div ref={mapRef} className="relative hidden bg-white p-4 shadow-md rounded-lg">
             <h2 className="font-bold mb-2">{showStartMap ? "Start Floor Map" : "End Floor Map"}</h2>
@@ -550,7 +550,7 @@ function Page() {
               <input ref={inputRef} type="text" placeholder='Search any floor' />
               <div className={style['input-logo-container']}>
                 <Image src={Search} width={50} height={50} alt='logo' />
-                <Image onClick={handleSearchOpen} className='cursor-pointer hover:scale-110 duration-100' src={Direction} width={50} height={50} alt='logo' />
+                <Image onClick={handleSearchOpen} className='cursor-pointer hover:scale-110 duration-300' src={Direction} width={50} height={50} alt='logo' />
               </div>
             </div>
             <div className="relative">
