@@ -61,7 +61,7 @@ function Page() {
           setUserPhoto(user.photoURL);
           
           // Allow codernavank@gmail.com or @vitbhopal.ac.in emails
-          if (!user.email.endsWith('@vitbhopal.ac.in') && user.email !== 'codernavank@gmail.com') {
+          if (!user.email.endsWith('@vitbhopal.ac.in') && user.email !== 'codernavank@gmail.com' && user.email !== 'dakshdugar890@gmail.com') {
             await signOut(auth);
             router.replace('/login');
             return;

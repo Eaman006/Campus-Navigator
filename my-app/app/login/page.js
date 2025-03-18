@@ -25,7 +25,7 @@ const Page = () => {
 
         if (user) {
           // Check if the logged-in user has the correct email domain
-          if (!user.email.endsWith('@vitbhopal.ac.in') && user.email !== 'codernavank@gmail.com') {
+          if (!user.email.endsWith('@vitbhopal.ac.in') && user.email !== 'codernavank@gmail.com' && user.email !== 'dakshdugar890@gmail.com') {
             await signOut(auth);
             setErrorMessage('Access restricted to @vitbhopal.ac.in emails and codernavank@gmail.com');
             setIsLoading(false);
@@ -90,7 +90,7 @@ const Page = () => {
       const result = await signInWithPopup(auth, googleProvider);
       const userEmail = result.user.email;
       
-      if (!userEmail.endsWith('@vitbhopal.ac.in') && userEmail !== 'codernavank@gmail.com') {
+      if (!userEmail.endsWith('@vitbhopal.ac.in') && userEmail !== 'codernavank@gmail.com' && userEmail !== 'dakshdugar890@gmail.com') {
         // Sign out the user if email is not from vitbhopal.ac.in
         await signOut(auth);
         setErrorMessage('Access restricted to @vitbhopal.ac.in emails and codernavank@gmail.com');
