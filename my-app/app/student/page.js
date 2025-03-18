@@ -263,7 +263,7 @@ function Page() {
 
   return (
     <div className="relative w-full h-screen select-none">
-      <div className={style['container']}>
+    <div className={style['container']}>
 
         <div ref={buttonRef} className="absolute hidden top-25 left-40 bg-white text-black shadow-lg rounded-lg p-4 w-96 z-50">
           {/* Close Button */}
@@ -349,7 +349,7 @@ function Page() {
 
 
         <div className={style['container-left']}>
-          <div className={style['container-left-top']}>
+            <div className={style['container-left-top']}>
             <div className={[style['hamburger-container'], isOpen ? (style.open) : (style.close), montserrat.variable].join(' ')}>
               <div className='flex justify-between items-center border-b-2'>
                 <p className='inline-block font-bold text-2xl'>Campus Navigator</p>
@@ -542,15 +542,15 @@ function Page() {
 
             <Image src={Hamburger} width={50} height={50} alt='logo' className='pb-10 pt-6 cursor-pointer hover:scale-115 duration-300' onClick={handleOpen} />
             <Image src={Recent} width={50} height={50} alt='logo' />
-          </div>
+            </div>
           
         </div>
         <div className={style['container-right']}>
-          <div className={style['sub-container-right']}>
+            <div className={style['sub-container-right']}>
             <div className={style['input-container']} onClick={handleFocus}>
               <input ref={inputRef} type="text" placeholder='Search any floor' />
-              <div className={style['input-logo-container']}>
-                <Image src={Search} width={50} height={50} alt='logo' />
+                    <div className={style['input-logo-container']}>
+                        <Image src={Search} width={50} height={50} alt='logo' />
                 <Image onClick={handleSearchOpen} className='cursor-pointer hover:scale-110 duration-300' src={Direction} width={50} height={50} alt='logo' />
               </div>
             </div>
@@ -567,7 +567,7 @@ function Page() {
                   className="rounded-full object-cover"
                   priority
                 />
-              </div>
+                    </div>
               
               {/* Profile Dropdown */}
               {showProfileDropdown && (
@@ -592,9 +592,9 @@ function Page() {
             {isLoading ? (
               <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500"></div>
             ) : showFloorMap && selectedFloor !== null ? (
-              <div className="w-full h-full">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-xl font-bold">
+              <div className="w-full h-[calc(100%-4rem)]">
+                <div className="flex justify-center items-center mb-4">
+                  <h2 className="text-xl font-bold text-center w-1/2">
                     {selectedBuilding} - Floor {selectedFloor}
                   </h2>
                   <button
@@ -623,8 +623,8 @@ function Page() {
               </div>
             )}
           </div>
+            </div>
         </div>
-      </div>
     </div>
   )
 }

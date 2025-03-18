@@ -56,19 +56,8 @@ const FloorMap = ({ floorNumber, academicBlock = 1 }) => {
           if (svgElement) {
             svgElement.style.width = '100%';
             svgElement.style.height = '100%';
-            svgElement.style.maxHeight = '70vh';
+            svgElement.style.maxHeight = 'calc(100vh - 120px)';
             svgElement.setAttribute('preserveAspectRatio', 'xMidYMid meet');
-
-            // Add style tag to override cls-7
-            const styleTag = document.createElement('style');
-            styleTag.textContent = `
-              .cls-7 {
-                fill: #fff !important;
-                stroke: #000 !important;
-                stroke-width: 1px !important;
-              }
-            `;
-            svgElement.appendChild(styleTag);
           }
 
           const rooms = svgDoc.querySelectorAll("[id^='room']");
@@ -182,86 +171,82 @@ const FloorMap = ({ floorNumber, academicBlock = 1 }) => {
   }
 
   return (
-    <div className="relative w-full h-full flex flex-col items-center justify-center">
-      {/* Centered Headi
-      
+    <div className="relative w-full h-full flex items-center justify-center">
       {/* SVG Container */}
-      <div className="w-full h-full flex items-center justify-center p-4">
-        <object
-          ref={svgRef}
-          data={getSvgPath(floorNumber, academicBlock)}
-          type="image/svg+xml"
-          className="w-full h-full max-h-[70vh] object-contain"
-          style={{ maxWidth: '90%' }}
-        >
-          <div className="text-center">
-            <p className="text-red-500 mb-2">Unable to load floor map</p>
-            <p className="text-gray-600 mb-4">SVG file for Block {academicBlock}, Floor {floorNumber} may be missing or inaccessible</p>
-            <button 
-              onClick={() => window.location.reload()}
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+      <object
+        ref={svgRef}
+        data={getSvgPath(floorNumber, academicBlock)}
+        type="image/svg+xml"
+        className="w-full h-full object-contain"
+        style={{ maxWidth: '95%', maxHeight: '95%' }}
+      >
+        <div className="text-center">
+          <p className="text-red-500 mb-2">Unable to load floor map</p>
+          <p className="text-gray-600 mb-4">SVG file for Block {academicBlock}, Floor {floorNumber} may be missing or inaccessible</p>
+          <button 
+            onClick={() => window.location.reload()}
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          >
+            Try Reloading
+          </button>
+        </div>
+      </object>
+
+      {/* Room Details Panel */}
+      {showDetails && roomDetails && (
+        <div className="absolute left-4 top-4 bg-white rounded-lg shadow-lg p-3 w-80 z-10 max-h-[80%] flex flex-col">
+          <div className="flex justify-between items-start mb-2">
+            <h2 className="text-lg font-bold">Room Details</h2>
+            <button
+              onClick={handleCloseDetails}
+              className="text-gray-500 hover:text-gray-700"
             >
-              Try Reloading
+              ✕
             </button>
           </div>
-        </object>
-
-        {/* Room Details Panel */}
-        {showDetails && roomDetails && (
-          <div className="absolute left-4 top-4 bg-white rounded-lg shadow-lg p-3 w-80 z-10 max-h-[70vh] flex flex-col">
-            <div className="flex justify-between items-start mb-2">
-              <h2 className="text-lg font-bold">Room Details</h2>
-              <button
-                onClick={handleCloseDetails}
-                className="text-gray-500 hover:text-gray-700"
-              >
-                ✕
-              </button>
-            </div>
-            
-            {!showTeacherDetails ? (
-              <>
-                <div 
-                  className="prose prose-sm overflow-y-auto"
-                  dangerouslySetInnerHTML={{ __html: roomDetails.details }}
-                />
-                {roomDetails.hasTeachers && (
-                  <button
-                    className="mt-3 bg-blue-500 text-white px-3 py-1.5 rounded hover:bg-blue-600 text-sm"
-                    onClick={handleViewTeacherDetails}
-                  >
-                    View Teacher Details
-                  </button>
-                )}
-              </>
-            ) : (
-              <div className="teacher-details flex flex-col min-h-0">
-                <h3 className="text-base font-semibold mb-2">Teacher Information</h3>
-                <div 
-                  className="overflow-y-auto flex-grow pr-2 custom-scrollbar mb-3"
-                  style={{
-                    maxHeight: 'calc(70vh - 9rem)',
-                    scrollbarWidth: 'thin',
-                    scrollbarColor: '#CBD5E0 #EDF2F7'
+          
+          {!showTeacherDetails ? (
+            <>
+              <div 
+                className="prose prose-sm overflow-y-auto"
+                dangerouslySetInnerHTML={{ __html: roomDetails.details }}
+              />
+              {roomDetails.hasTeachers && (
+                <button
+                  className="mt-3 bg-blue-500 text-white px-3 py-1.5 rounded hover:bg-blue-600 text-sm"
+                  onClick={handleViewTeacherDetails}
+                >
+                  View Teacher Details
+                </button>
+              )}
+            </>
+          ) : (
+            <div className="teacher-details flex flex-col min-h-0">
+              <h3 className="text-base font-semibold mb-2">Teacher Information</h3>
+              <div 
+                className="overflow-y-auto flex-grow pr-2 custom-scrollbar mb-3"
+                style={{
+                  maxHeight: 'calc(80vh - 200px)',
+                  scrollbarWidth: 'thin',
+                  scrollbarColor: '#CBD5E0 #EDF2F7'
+                }}
+                dangerouslySetInnerHTML={{ __html: teacherDetailsHtml }}
+              />
+              <div className="bg-white pt-1">
+                <button
+                  className="w-full bg-gray-500 text-white px-3 py-1.5 rounded hover:bg-gray-600 text-sm"
+                  onClick={() => {
+                    setShowTeacherDetails(false);
+                    setTeacherDetailsHtml('');
                   }}
-                  dangerouslySetInnerHTML={{ __html: teacherDetailsHtml }}
-                />
-                <div className="bg-white pt-1">
-                  <button
-                    className="w-full bg-gray-500 text-white px-3 py-1.5 rounded hover:bg-gray-600 text-sm"
-                    onClick={() => {
-                      setShowTeacherDetails(false);
-                      setTeacherDetailsHtml('');
-                    }}
-                  >
-                    Back to Room Details
-                  </button>
-                </div>
+                >
+                  Back to Room Details
+                </button>
               </div>
-            )}
-          </div>
-        )}
-      </div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };
