@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { auth, googleProvider } from "@/lib/firebase";
 import { signInWithEmailAndPassword, signInWithPopup, onAuthStateChanged, signOut } from "firebase/auth";
 import { useRouter } from "next/navigation";
+import Link from 'next/link';
 
 const Page = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -153,12 +154,15 @@ const Page = () => {
             </div>
             <div className='bg-[#007BFF] text-white flex my-7 p-2 rounded-lg mx-2 cursor-pointer'>
               <div className='w-4/5'>
+              <Link href="/student">
                 <div className='text-3xl font-bold mx-5 mt-1'>
                   Explore as Guest
                 </div>
+                
                 <div className='mx-5 text-sm'>
                   Quick access with limited features
                 </div>
+                </Link>
               </div>
               <div>
                 <Image src="/profile.png" width={70} height={70} alt='profile' />
