@@ -152,9 +152,10 @@ const Page = () => {
             <div className='font-bold text-black text-2xl text-center'>
               by VIT for VIT
             </div>
+            <Link href="/guest">
             <div className='bg-[#007BFF] text-white flex my-7 p-2 rounded-lg mx-2 cursor-pointer'>
               <div className='w-4/5'>
-              <Link href="/student">
+              
                 <div className='text-3xl font-bold mx-5 mt-1'>
                   Explore as Guest
                 </div>
@@ -162,12 +163,13 @@ const Page = () => {
                 <div className='mx-5 text-sm'>
                   Quick access with limited features
                 </div>
-                </Link>
+                
               </div>
               <div>
                 <Image src="/profile.png" width={70} height={70} alt='profile' />
               </div>
             </div>
+            </Link>
             <div 
               className='bg-[#007BFF] text-white flex my-3 p-2 rounded-lg mx-2 cursor-pointer'
               onClick={!isAuthenticating ? handleGoogleSignIn : undefined}
