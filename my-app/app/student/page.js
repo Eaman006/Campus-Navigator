@@ -44,6 +44,7 @@ function Page() {
   const [isHomeSelected, setIsHomeSelected] = useState(true);
   const [showFloorMap, setShowFloorMap] = useState(false);
   const [showAcademicDropdown, setShowAcademicDropdown] = useState(false);
+  const preferenceRef = useRef('Stairs');
 
   // Effect for authentication and initialization
   useEffect(() => {
@@ -175,7 +176,7 @@ function Page() {
         body: JSON.stringify({
           start,
           end,
-          preference: "Lift",
+          preference: preferenceRef.current.value,
           building: "AB-01",
         }),
       });
@@ -297,6 +298,16 @@ function Page() {
                 value={end}
                 onChange={(e) => setEnd(e.target.value)}
               />
+              <select
+                type="text"
+                placeholder="Choose end floor"
+                className="border mt-2 p-2 rounded-md w-full text-black"
+                ref={preferenceRef}
+              >
+                <option value="Stairs" hidden defaultChecked>select preference</option>
+                <option value="Stairs">Stairs</option>
+                <option value="Lift">Lift</option>
+              </select>
             </div>
 
             {/* Swap Button */}
