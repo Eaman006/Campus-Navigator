@@ -54,10 +54,10 @@ const FloorMap = ({ floorNumber, academicBlock = 1 }) => {
           // Add styles to make SVG responsive and centered
           const svgElement = svgDoc.querySelector('svg');
           if (svgElement) {
-            svgElement.style.width = '100%';
-            svgElement.style.height = '100%';
-            svgElement.style.maxHeight = '100vh';
-            svgElement.style.transform = 'scale(0.9)';
+            svgElement.style.width = '110%';
+            svgElement.style.height = '110%';
+            svgElement.style.maxHeight = '110vh';
+            svgElement.style.transform = 'scale(1.0)';
             svgElement.setAttribute('preserveAspectRatio', 'xMidYMid meet');
 
             // Add style tag to override cls-7
