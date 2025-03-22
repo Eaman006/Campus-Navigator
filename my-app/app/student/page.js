@@ -599,11 +599,11 @@ function Page() {
           </div>
 
           {/* Floor Map Display */}
-          <div className="w-full h-[calc(100%-4rem)] mt-4">
+          <div className="w-full h-[calc(100%-4rem)] mt-4 overflow-hidden">
             {isLoading ? (
               <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500"></div>
             ) : showFloorMap && selectedFloor !== null ? (
-              <div className="w-full h-[calc(100%-4rem)]">
+              <div className="w-full h-full overflow-hidden">
                 <div className="flex justify-center items-center mb-4">
                   <h2 className="text-xl font-bold text-center w-1/2">
                     {selectedBuilding} - Floor {selectedFloor}

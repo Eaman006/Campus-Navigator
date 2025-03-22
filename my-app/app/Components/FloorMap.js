@@ -56,7 +56,8 @@ const FloorMap = ({ floorNumber, academicBlock = 1 }) => {
           if (svgElement) {
             svgElement.style.width = '100%';
             svgElement.style.height = '100%';
-            svgElement.style.maxHeight = '70vh';
+            svgElement.style.maxHeight = '100vh';
+            svgElement.style.transform = 'scale(0.9)';
             svgElement.setAttribute('preserveAspectRatio', 'xMidYMid meet');
 
             // Add style tag to override cls-7
@@ -186,13 +187,13 @@ const FloorMap = ({ floorNumber, academicBlock = 1 }) => {
       {/* Centered Headi
       
       {/* SVG Container */}
-      <div className="w-full h-full flex items-center justify-center p-4">
+      <div className="w-full h-full flex items-center justify-center p-0 overflow-hidden">
         <object
           ref={svgRef}
           data={getSvgPath(floorNumber, academicBlock)}
           type="image/svg+xml"
-          className="w-full h-full max-h-[70vh] object-contain"
-          style={{ maxWidth: '90%' }}
+          className="w-full h-full max-h-[180vh] object-contain"
+          style={{ maxWidth: '130%', transform: 'scale(1.2)' }}
         >
           <div className="text-center">
             <p className="text-red-500 mb-2">Unable to load floor map</p>
@@ -208,7 +209,7 @@ const FloorMap = ({ floorNumber, academicBlock = 1 }) => {
 
         {/* Room Details Panel */}
         {showDetails && roomDetails && (
-          <div className="absolute left-4 top-4 bg-white rounded-lg shadow-lg p-3 w-80 z-10 max-h-[70vh] flex flex-col">
+          <div className="absolute left-4 top-4 bg-white rounded-lg shadow-lg p-3 w-80 z-10 max-h-[95vh] flex flex-col">
             <div className="flex justify-between items-start mb-2">
               <h2 className="text-lg font-bold">Room Details</h2>
               <button
