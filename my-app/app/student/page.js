@@ -154,14 +154,14 @@ function Page() {
     if (mapRef.current) {
       mapRef.current.style.display = 'none';
     }
+    setEndFloorMap('')
+    setStartFloorMap('')
+    setSvgData('')
   }
 
 
   // Function to handle API request
   const handleSearch = async () => {
-    if (mapRef.current) {
-      mapRef.current.style.display = 'block';
-    }
 
     if (!start || !end) {
       alert("Please enter both start and end floors.");
@@ -214,6 +214,9 @@ function Page() {
       console.error("Request failed:", error);
     } finally {
       setLoading(false);
+    }
+    if (mapRef.current) {
+      mapRef.current.style.display = 'block';
     }
   };
 
