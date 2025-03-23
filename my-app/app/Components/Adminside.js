@@ -1,4 +1,5 @@
 "use client"
+import { FaHome } from "react-icons/fa";
 import React, { useState, useEffect } from 'react'
 import { MdOutlineMenu } from "react-icons/md";
 import { MdEventNote } from "react-icons/md";
@@ -55,6 +56,14 @@ const Adminside = () => {
         </div>
         <div className={`font-medium ${!isExpanded && 'hidden'}`}>{user?.displayName || user?.email || 'User'}</div>
       </div>
+      <Link href="/cpanel">
+      <div className={`my-3 mx-2 px-2 hover:bg-gray-200 rounded-md py-2 ${getActivePath("/cpanel")}` }>
+      <button className='flex gap-2 text-lg cursor-pointer items-center'>
+      <FaHome size={24} />
+        <span className={`${!isExpanded && 'hidden'}`}>Home</span>
+      </button>
+      </div>
+      </Link>
       <Link href="/cpanel/event-register">
       <div className={`my-3 mx-2 px-2 hover:bg-gray-200 rounded-md py-2 ${getActivePath("/cpanel/event-register")}` }>
       <button className='flex gap-2 text-lg cursor-pointer items-center'>

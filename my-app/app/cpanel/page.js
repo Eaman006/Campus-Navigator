@@ -46,8 +46,10 @@ const Page = () => {
   }
 
   return (
-    <div className=''>
-      
+    <div className=' text-black pl-20'>
+      <div className='font-bold text-center text-xl m-2'>
+        Welcome to VIT Bhopal Campus Navigator Admin Control Panel
+      </div>
     </div>
   )
 }
