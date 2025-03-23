@@ -79,7 +79,7 @@ export function LoginForm({
                 <Button 
                   type="submit"
                   variant="outline" 
-                  className="w-full" 
+                  className="w-full bg-black" 
                   disabled={isLoading}
                 >
                   {isLoading ? (

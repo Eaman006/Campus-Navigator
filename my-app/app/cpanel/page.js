@@ -1,7 +1,5 @@
 "use client"
 import React, { useState, useEffect } from 'react'
-import Adminside from '../Components/Adminside'
-import Adminnav from '../Components/Adminnav'
 import { auth } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
 import { getAdminEmails } from "@/lib/adminUtils"
@@ -37,7 +35,7 @@ const Page = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-white">
+      <div className="flex items-center justify-center bg-white">
         <div className="text-black">Loading...</div>
       </div>
     );
@@ -48,9 +46,8 @@ const Page = () => {
   }
 
   return (
-    <div className='bg-white h-screen w-screen'>
-      <Adminnav />     
-      <Adminside />
+    <div className=''>
+      
     </div>
   )
 }
