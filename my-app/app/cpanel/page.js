@@ -1,9 +1,12 @@
 import React from 'react'
+import Adminside from '../Components/Adminside'
+import Adminnav from '../Components/Adminnav'
 
 const page = () => {
   return (
-    <div>
-      This is the cpanel of Campus Navigator
+    <div className='bg-white h-screen w-screen'>
+      <Adminnav />     
+      <Adminside  />
     </div>
   )
 }
