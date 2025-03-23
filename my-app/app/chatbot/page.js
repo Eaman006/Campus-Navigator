@@ -66,7 +66,7 @@ const Chatbot = () => {
         {messages.map((msg, index) => (
           <div
             key={index}
-            className={`p-3 rounded-lg w-fit  ${
+            className={`p-3 rounded-lg w-fit max-w-[40%] ${
               msg.sender === "user"
                 ? "bg-blue-500 text-white ml-auto text-right" // User messages align right
                 : "bg-gray-300 text-black mr-auto text-left" // Server messages align left
