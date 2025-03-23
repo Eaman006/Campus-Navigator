@@ -1,47 +1,132 @@
 "use client";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 
 const Chatbot = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const inputRef = useRef(null);
+  const [startFloorMap, setStartFloorMap] = useState("");
+  const [endFloorMap, setEndFloorMap] = useState("");
+  const [showStartMap, setShowStartMap] = useState(true);
+  const [svgData, setSvgData] = useState(null);
+  const mapRef = useRef(null);
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
+  const toggleMap = () => {
+    setShowStartMap((prev) => !prev);
+  };
+
+  // checks the message for /upload route
+  function containsFromToAndNumber(sentence) {
+    const fromToPattern = /\b(from\b.*\bto|to\b.*\bfrom)\b/i; // Matches 'from ... to' or 'to ... from'
+    const numberPattern = /\b\d+\b/; // Check if a number exists
+
+    return fromToPattern.test(sentence) && numberPattern.test(sentence);
+  }
+
+  const handleMapClose = () => {
+    if (mapRef.current) {
+      mapRef.current.style.display = 'none';
+    }
+    setEndFloorMap('')
+    setStartFloorMap('')
+    setSvgData('')
+  }
 
   const handleSendMessage = async () => {
     if (!input.trim()) return;
 
     const newMessage = { text: input, sender: "user" };
     setMessages((prevMessages) => [...prevMessages, newMessage]);
-    
+
     setInput("");
-    // Sending request to backend
-    try {
-      const response = await fetch(
-        "https://project-expo-group-90-production.up.railway.app/chat",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            message: input,
-          }),
-        }
-      );
 
-      if (response.ok) {
-        const data = await response.json();
-        if (data.error) {
-          alert(data.error);
-          return;
-        }
+    if (containsFromToAndNumber(input)) {
 
-        const serverMessage = { text: data.response, sender: "server" };
-        setMessages((prevMessages) => [...prevMessages, serverMessage]);
+      // Create a FormData object
+      const formData = new FormData();
+      formData.append("text", input)
+
+      try {
+        const response = await fetch(`https://project-expo-group-90-production.up.railway.app/upload?text=${input}`,
+          {
+            method: "POST",
+            body: formData
+          })
+        if (response.ok) {
+          const contentType = response.headers.get("Content-Type");
+
+          if (contentType.includes("application/json")) {
+            // Complex Path - JSON Response
+            const data = await response.json();
+            if (data.error) {
+              alert(data.error);
+              return;
+            }
+            const serverMessage = { text: "opening map!!", sender: "server" };
+            setMessages((prevMessages) => [...prevMessages, serverMessage]);
+            setStartFloorMap(data.files.start_floor);
+            setEndFloorMap(data.files.end_floor);
+            setSvgData(null); // Reset SVG data
+          } else if (contentType.includes("image/svg+xml")) {
+            // Same Floor - SVG Response
+            const svgText = await response.text();
+            setSvgData(svgText); // Store the SVG text
+            setStartFloorMap(null);
+            setEndFloorMap(null);
+          } else {
+            console.error("Unexpected response format");
+          }
+        } else {
+          console.error("Error fetching path:", response.statusText);
+        }
+      } catch (error) {
+        console.error("Request failed:", error);
       }
-    } catch (error) {
-      console.error("Error sending message:", error);
+
+      if (mapRef.current) {
+        mapRef.current.style.display = 'block';
+      }
+
     }
+
+    else {
+
+      // Sending request to backend for /chat route
+      try {
+        const response = await fetch(
+          "https://project-expo-group-90-production.up.railway.app/chat",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              message: input,
+            }),
+          }
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.error) {
+            alert(data.error);
+            return;
+          }
+
+          const serverMessage = { text: data.response, sender: "server" };
+          setMessages((prevMessages) => [...prevMessages, serverMessage]);
+        }
+      } catch (error) {
+        console.error("Error sending message:", error);
+      }
+    }
+
   };
 
   const handleFocus = () => {
@@ -66,11 +151,10 @@ const Chatbot = () => {
         {messages.map((msg, index) => (
           <div
             key={index}
-            className={`p-3 rounded-lg w-fit max-w-[40%] ${
-              msg.sender === "user"
-                ? "bg-blue-500 text-white ml-auto text-right" // User messages align right
-                : "bg-gray-300 text-black mr-auto text-left" // Server messages align left
-            }`}
+            className={`p-3 rounded-lg w-fit max-w-[40%] ${msg.sender === "user"
+              ? "bg-blue-500 text-white ml-auto text-right" // User messages align right
+              : "bg-gray-300 text-black mr-auto text-left" // Server messages align left
+              }`}
           >
             {msg.text.split("\n").map((line, i) => (
               <p key={i}>{line}</p>
@@ -100,6 +184,7 @@ const Chatbot = () => {
           onChange={(e) => setInput(e.target.value)}
           placeholder="Ask something..."
           onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
+          focus='true'
         />
 
         <Image
@@ -110,6 +195,38 @@ const Chatbot = () => {
           className="cursor-pointer"
           onClick={handleSendMessage}
         />
+      </div>
+      <div className="flex gap-6 mt-6 absolute top-5 left-150 z-50 text-black">
+        {/* Map Container */}
+        <div ref={mapRef} className="relative hidden bg-white p-4 shadow-md rounded-lg">
+          <h2 className="font-bold mb-2">{showStartMap ? "Start Floor Map" : "End Floor Map"}</h2>
+
+          {/* Swap Button Inside iFrame */}
+          <button
+            onClick={toggleMap}
+            className="absolute top-2 right-16 bg-gray-300 p-2 rounded-md shadow-md z-10 cursor-pointer"
+          >
+            🔄 Swap Map
+          </button>
+          <button
+            onClick={handleMapClose}
+            className="absolute top-2 right-2 bg-gray-300 p-2 rounded-md shadow-md z-10 cursor-pointer"
+          >
+            <Image src='/Close.png' width={30} height={30} alt='close' />
+          </button>
+
+          {svgData ? (
+            // Display SVG directly for same floor
+            <div dangerouslySetInnerHTML={{ __html: svgData }} className="w-[500px] h-[500px] border rounded-lg" />
+          ) : (
+            // For different floor
+            <iframe
+              src={`https://project-expo-group-90-production.up.railway.app/${showStartMap ? startFloorMap : endFloorMap}`}
+              className="w-150 h-150 border rounded-lg"
+            />
+          )}
+
+        </div>
       </div>
     </div>
   );
