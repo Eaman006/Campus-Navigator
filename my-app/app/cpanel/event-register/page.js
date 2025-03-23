@@ -1,7 +1,7 @@
 "use client"
 import React, { useState } from 'react'
 
-const page = () => {
+const Page = () => {
   const [venueBuilding, setVenueBuilding] = useState("");
 
   const handleSelectChange = (e) => {
@@ -57,4 +57,4 @@ const page = () => {
   )
 }
 
-export default page;
+export default Page;
