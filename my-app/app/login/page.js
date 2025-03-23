@@ -58,7 +58,7 @@ const Page = () => {
 
       mediaElements.forEach((media) => {
         if (!media) return;
-        
+
         if (media.complete || media.readyState >= 3) {
           loadedCount++;
         } else {
@@ -90,7 +90,7 @@ const Page = () => {
       setIsAuthenticating(true); // Show loading before popup
       const result = await signInWithPopup(auth, googleProvider);
       const userEmail = result.user.email;
-      
+
       if (!userEmail.endsWith('@vitbhopal.ac.in') && userEmail !== 'codernavank@gmail.com' && userEmail !== 'dakshdugar890@gmail.com') {
         // Sign out the user if email is not from vitbhopal.ac.in
         await signOut(auth);
@@ -98,7 +98,7 @@ const Page = () => {
         setIsAuthenticating(false);
         return;
       }
-      
+
       console.log("User signed in:", result.user);
       router.push("/student"); // Redirect to dashboard after successful login
     } catch (error) {
@@ -153,24 +153,24 @@ const Page = () => {
               by VIT for VIT
             </div>
             <Link href="/guest">
-            <div className='bg-[#007BFF] text-white flex my-7 p-2 rounded-lg mx-2 cursor-pointer'>
-              <div className='w-4/5'>
-              
-                <div className='text-3xl font-bold mx-5 mt-1'>
-                  Explore as Guest
+              <div className='bg-[#007BFF] text-white flex my-7 p-2 rounded-lg mx-2 cursor-pointer'>
+                <div className='w-4/5'>
+
+                  <div className='text-3xl font-bold mx-5 mt-1'>
+                    Explore as Guest
+                  </div>
+
+                  <div className='mx-5 text-sm'>
+                    Quick access with limited features
+                  </div>
+
                 </div>
-                
-                <div className='mx-5 text-sm'>
-                  Quick access with limited features
+                <div>
+                  <Image src="/profile.png" width={70} height={70} alt='profile' />
                 </div>
-                
               </div>
-              <div>
-                <Image src="/profile.png" width={70} height={70} alt='profile' />
-              </div>
-            </div>
             </Link>
-            <div 
+            <div
               className='bg-[#007BFF] text-white flex my-3 p-2 rounded-lg mx-2 cursor-pointer'
               onClick={!isAuthenticating ? handleGoogleSignIn : undefined}
             >
@@ -186,6 +186,7 @@ const Page = () => {
                 <Image src="/google.png" width={70} height={70} alt='google' />
               </div>
             </div>
+            
             {errorMessage && (
               <div className='text-red-600 text-center mt-3 font-semibold'>
                 {errorMessage}
