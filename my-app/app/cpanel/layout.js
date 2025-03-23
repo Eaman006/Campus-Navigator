@@ -1,8 +1,5 @@
 import { Geist, Geist_Mono } from "next/font/google";
-import Adminnav from "../Components/Adminnav";
-import Adminside from "../Components/Adminside";
-
-
+import AdminLayoutWrapper from "../Components/admin-layout-wrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -22,12 +19,10 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <Adminnav />
-        <Adminside />                
-        {children}
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <AdminLayoutWrapper>
+          {children}
+        </AdminLayoutWrapper>
       </body>
     </html>
   );

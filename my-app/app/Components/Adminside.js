@@ -7,12 +7,14 @@ import { FaClipboardList } from "react-icons/fa";
 import { MdRoomPreferences } from "react-icons/md";
 import { CiLogout } from "react-icons/ci";
 import { auth } from "@/lib/firebase";
+import { signOut } from "firebase/auth";
 import Image from "next/image";
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 const Adminside = () => {
   const pathname = usePathname();
+  const router = useRouter();
   const getActivePath=(path)=>{
     return pathname === path ? 'text-blue-700 bg-gray-200' : '';
   }
@@ -88,7 +90,15 @@ const Adminside = () => {
         </button>
       </div>
       </Link>
-      <div className='font-bold text-xl flex gap-2 absolute bottom-5 mx-2'>
+      <div className='font-bold text-xl flex gap-2 absolute bottom-5 mx-2 cursor-pointer hover:bg-gray-200 p-2 rounded-md'
+        onClick={async () => {
+          try {
+            await signOut(auth);
+            router.push('/admin');
+          } catch (error) {
+            console.error('Error signing out:', error);
+          }
+        }}>
         <CiLogout size={24} />
         <button className={`${!isExpanded && 'hidden'}`}>Logout</button>
       </div>
