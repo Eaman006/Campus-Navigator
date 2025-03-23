@@ -30,7 +30,7 @@ const Adminside = () => {
   }, []);
 
   return (
-    <div className={`text-black shadow-blue-300 shadow-xl transition-all duration-300 ${isExpanded ? 'w-1/5' : 'w-16'} absolute h-[92.5vh]`}>
+    <div className={`text-black shadow-blue-300 shadow-xl transition-all duration-300 bg-white ${isExpanded ? 'w-1/5' : 'w-16'} absolute h-[92.5vh]`}>
       <div className='flex gap-10 p-5 font-bold text-2xl justify-between'>
         <div className={`${!isExpanded && 'hidden'}`}>Menu</div>
         <MdOutlineMenu 
