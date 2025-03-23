@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";    
 
 const Chatbot = () => {
   const [messages, setMessages] = useState([]);
@@ -135,6 +136,12 @@ const Chatbot = () => {
     }
   };
 
+  const router = useRouter();
+
+  const handleClose = () => {
+    router.push("/student"); // Redirect to "/student"
+  };
+
   return (
     <div className="flex flex-col h-screen w-full mx-auto bg-white shadow-lg rounded-lg border">
       {/* Header */}
@@ -143,7 +150,13 @@ const Chatbot = () => {
           <Image src="/logoSend.png" width={100} height={100} alt="logo" />
           <h2 className="font-bold text-[35px] text-[#000000]">Campus Assistant</h2>
         </div>
+        <div className="flex min-w-[8%] justify-between items-center">
         <Image src="/profile.png" width={50} height={50} alt="logo" />
+        {/* Close button */}
+      <button onClick={handleClose}>
+        <Image src="/Close_White.png" width={50} height={50} alt="close" className="cursor-pointer" />
+      </button>
+        </div>
       </div>
 
       {/* Messages Area */}
