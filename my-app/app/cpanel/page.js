@@ -6,7 +6,7 @@ import { auth } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
 import { getAdminEmails } from "@/lib/adminUtils"
 
-const page = () => {
+const Page = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const router = useRouter();
@@ -55,4 +55,4 @@ const page = () => {
   )
 }
 
-export default page
+export default Page
