@@ -302,7 +302,7 @@ function Page() {
     <div className="relative w-full h-screen select-none">
       <div className={style['container']}>
 
-        <div ref={buttonRef} className="absolute hidden top-25 left-40 bg-white text-black shadow-lg rounded-lg p-4 w-96 z-50">
+        <div ref={buttonRef} className="absolute hidden top-0 left-[7%] bg-white text-black shadow-[0px_4px_4px_0px_#00000040] rounded-lg p-4 w-96 z-50">
           {/* Close Button */}
           <div className="flex justify-end">
             <button className="text-gray-500 hover:text-black cursor-pointer text-2xl" onClick={handleSearchClose}>&times;</button>
@@ -363,7 +363,7 @@ function Page() {
 
         <div className="flex gap-6 mt-6 absolute top-5 left-150 z-50">
           {/* Map Container */}
-          <div ref={mapRef} className="relative hidden bg-white p-4 shadow-md rounded-lg">
+          <div ref={mapRef} className="relative hidden bg-white p-4 shadow-[0px_4px_4px_0px_#00000040] rounded-lg">
             <h2 className="font-bold mb-2">{showStartMap ? "Start Floor Map" : "End Floor Map"}</h2>
 
             {/* Swap Button Inside iFrame */}
@@ -397,7 +397,7 @@ function Page() {
 
         <div className={style['container-left']}>
           <div className={style['container-left-top']}>
-            <div className={[style['hamburger-container'], isOpen ? (style.open) : (style.close), montserrat.variable].join(' ')}>
+            <div className={[style['hamburger-container'], isOpen ? (style.open) : (style.close), montserrat.variable, 'shadow-[4px_0px_4px_2px_#00000040] hover:shadow-[6px_0px_6px_3px_#00000050]'].join(' ')}>
               <div className='flex justify-between items-center border-b-2'>
                 <p className='inline-block font-bold text-2xl'>Campus Navigator</p>
                 <span onClick={handleOpen} className='cursor-pointer hover:scale-115 duration-300 inline-block'><Image src='/Close.png' width={30} height={30} alt='close' /></span>
@@ -586,11 +586,11 @@ function Page() {
         </div>
         <div className={style['container-right']}>
           <div className={style['sub-container-right']}>
-            <div className={style['input-container']} onClick={handleFocus}>
+            <div className={[style['input-container'], 'shadow-[0px_4px_4px_0px_#00000040]'].join(' ')} onClick={handleFocus}>
               <input
                 ref={inputRef}
                 type="text"
-                placeholder='Search any professor'
+                placeholder='Search any Professor'
                 value={teacherName}
                 onChange={teacherChangeHandler}
                 onKeyDown={teacherSearchHandler}
