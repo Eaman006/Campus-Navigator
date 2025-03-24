@@ -33,16 +33,46 @@ const Page = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form Data Submitted:", formData);
+
+    const eventData = {
+      title: formData.eventName,
+      date: formData.eventDate,
+      time: formData.eventStartTime,
+      location: formData.venueBuilding,
+      capacity: parseInt(formData.venueRoom),
+      description: formData.coordinatorName
+    };
+
+    try {
+      const response = await fetch("https://project-expo-group-90-production.up.railway.app/events", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(eventData)
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Form Data Submitted Successfully:", data);
+        alert("Event successfully submitted!");
+        handleReset(e); // Reset form after successful submission
+      } else {
+        console.error("Failed to submit event:", response.statusText);
+        alert("Failed to submit event. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error occurred while submitting event:", error);
+      alert("Error occurred while submitting event. Please try again.");
+    }
   };
 
   return (
     <div className='text-black pl-20'>
-      
       <div className='mx-20 my-5 shadow-md shadow-black'>
-        <form className='m-3 p-3'>
+        <form className='m-3 p-3' onSubmit={handleSubmit}>
           <div className='text-center mb-4 font-bold text-xl'>Event Details</div>
 
           <div className='mx-2'>Event Name</div>
@@ -90,10 +120,10 @@ const Page = () => {
             className="ml-2 mb-4 p-2 border border-gray-300 rounded-lg w-1/3"
           >
             <option value="" disabled>Select a building</option>
-            <option value="Building A">Academic Block 1</option>
-            <option value="Building B">Academic Block 2</option>
-            <option value="Building C">Architecture Building</option>
-            <option value="Building D">Lab Complex</option>
+            <option value="Academic Block 1">Academic Block 1</option>
+            <option value="Academic Block 2">Academic Block 2</option>
+            <option value="Architecture Building">Architecture Building</option>
+            <option value="Lab Complex">Lab Complex</option>
           </select>
           
           <div className='mx-2'>Venue Room</div>
