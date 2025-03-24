@@ -60,7 +60,7 @@
 .input-container{
     width: 40%;
     height: 60px;
-    padding: 5px 60px;
+    padding: 5px 25px 5px 35px;
     display: flex;
     justify-content: space-between;
     background-color: #fff;
