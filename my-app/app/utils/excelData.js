@@ -37,6 +37,23 @@ export const loadTeacherData = async (roomId) => {
 };
 
 // Function to get teacher details for a specific room
-export const getTeacherDetails = async (roomId) => {
-  return await loadTeacherData(roomId);
-}; 
+export async function getTeacherDetails(roomId) {
+  try {
+    const response = await fetch(`/api/teacher-details?roomId=${roomId}`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch teacher details');
+    }
+    let html = await response.text();
+    
+    // Sanitize HTML by removing html, head, and body tags
+    html = html.replace(/<\/?html[^>]*>/g, '')
+               .replace(/<\/?head[^>]*>/g, '')
+               .replace(/<\/?body[^>]*>/g, '')
+               .trim();
+    
+    return html;
+  } catch (error) {
+    console.error('Error fetching teacher details:', error);
+    throw error;
+  }
+} 

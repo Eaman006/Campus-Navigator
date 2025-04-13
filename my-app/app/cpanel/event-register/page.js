@@ -12,6 +12,10 @@ const Page = () => {
     coordinatorName: ""
   });
 
+  const isFormValid = () => {
+    return Object.values(formData).every(value => value.trim() !== "");
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prevData => ({
@@ -75,87 +79,100 @@ const Page = () => {
         <form className='m-3 p-3' onSubmit={handleSubmit}>
           <div className='text-center mb-4 font-bold text-xl'>Event Details</div>
 
-          <div className='mx-2'>Event Name</div>
+          <div className='mx-2'>Event Name <span className="text-red-500">*</span></div>
           <input 
             type="text" 
             name="eventName" 
             value={formData.eventName}
             onChange={handleChange}
             placeholder='Enter the event name' 
-            className="ml-2 mb-4 p-2 border border-gray-300 rounded-lg w-1/3" 
+            className="ml-2 mb-4 p-2 border border-gray-300 rounded-lg w-1/3"
+            required
           />
 
-          <div className='mx-2'>Event Date</div>
+          <div className='mx-2'>Event Date <span className="text-red-500">*</span></div>
           <input 
             type="date" 
             name="eventDate" 
             value={formData.eventDate}
             onChange={handleChange}
-            className="ml-2 mb-4 p-2 border border-gray-300 rounded-lg w-1/3" 
+            className="ml-2 mb-4 p-2 border border-gray-300 rounded-lg w-1/3"
+            required
           />
 
-          <div className='mx-2'>Event Start Time</div>
+          <div className='mx-2'>Event Start Time <span className="text-red-500">*</span></div>
           <input 
             type="time" 
             name="eventStartTime" 
             value={formData.eventStartTime}
             onChange={handleChange}
-            className="ml-2 mb-4 p-2 border border-gray-300 rounded-lg w-1/3" 
+            className="ml-2 mb-4 p-2 border border-gray-300 rounded-lg w-1/3"
+            required
           />
 
-          <div className='mx-2'>Event End Time</div>
+          <div className='mx-2'>Event End Time <span className="text-red-500">*</span></div>
           <input 
             type="time" 
             name="eventEndTime" 
             value={formData.eventEndTime}
             onChange={handleChange}
-            className="ml-2 mb-4 p-2 border border-gray-300 rounded-lg w-1/3" 
+            className="ml-2 mb-4 p-2 border border-gray-300 rounded-lg w-1/3"
+            required
           />
 
-          <div className='mx-2'>Venue Building</div>
+          <div className='mx-2'>Venue Building <span className="text-red-500">*</span></div>
           <select
             name="venueBuilding"
             value={formData.venueBuilding}
             onChange={handleChange}
             className="ml-2 mb-4 p-2 border border-gray-300 rounded-lg w-1/3"
+            required
           >
-            <option value="" disabled>Select a building</option>
+            <option value="">Select a building</option>
             <option value="Academic Block 1">Academic Block 1</option>
             <option value="Academic Block 2">Academic Block 2</option>
             <option value="Architecture Building">Architecture Building</option>
             <option value="Lab Complex">Lab Complex</option>
           </select>
           
-          <div className='mx-2'>Venue Room</div>
+          <div className='mx-2'>Venue Room <span className="text-red-500">*</span></div>
           <input 
             type="text" 
             name="venueRoom"
             value={formData.venueRoom}
             onChange={handleChange}
             placeholder='Enter room number' 
-            className="ml-2 mb-4 p-2 border border-gray-300 rounded-lg w-1/3" 
+            className="ml-2 mb-4 p-2 border border-gray-300 rounded-lg w-1/3"
+            required
           />
           
-          <div className='mx-2'>Coordinator Name</div>
+          <div className='mx-2'>Coordinator Name <span className="text-red-500">*</span></div>
           <input 
             type="text" 
             name="coordinatorName"
             value={formData.coordinatorName}
             onChange={handleChange}
             placeholder='Enter Teacher Coordinator Name' 
-            className="ml-2 mb-4 p-2 border border-gray-300 rounded-lg w-1/3" 
+            className="ml-2 mb-4 p-2 border border-gray-300 rounded-lg w-1/3"
+            required
           />
 
           <div className='flex gap-5 justify-center items-center'>
             <button 
+              type="button"
               onClick={handleReset}
-              className='bg-blue-600 p-2 rounded-lg text-white cursor-pointer hover:active:text-blue-500'
+              className='bg-blue-600 p-2 rounded-lg text-white cursor-pointer hover:bg-blue-700 active:bg-blue-800'
             >
               Reset
             </button>
             <button 
-              onClick={handleSubmit}
-              className='bg-red-600 p-2 rounded-lg text-white cursor-pointer hover:active:text-blue-500'
+              type="submit"
+              disabled={!isFormValid()}
+              className={`p-2 rounded-lg text-white cursor-pointer ${
+                isFormValid() 
+                  ? 'bg-red-600 hover:bg-red-700 active:bg-red-800' 
+                  : 'bg-gray-400 cursor-not-allowed'
+              }`}
             >
               Submit
             </button>
