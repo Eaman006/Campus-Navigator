@@ -168,10 +168,10 @@ const Page = () => {
             <button 
               type="submit"
               disabled={!isFormValid()}
-              className={`p-2 rounded-lg text-white cursor-pointer ${
+              className={`p-2 rounded-lg text-white transition-all duration-200 ${
                 isFormValid() 
-                  ? 'bg-red-600 hover:bg-red-700 active:bg-red-800' 
-                  : 'bg-gray-400 cursor-not-allowed'
+                  ? 'bg-red-600 hover:bg-red-700 active:bg-red-800 cursor-pointer' 
+                  : 'bg-gray-400 opacity-50 cursor-not-allowed pointer-events-none'
               }`}
             >
               Submit
