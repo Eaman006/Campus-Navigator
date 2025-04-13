@@ -63,13 +63,16 @@ const FloorMap = ({ floorNumber, academicBlock = 1 }) => {
             svgElement.style.transform = 'scale(1.0)';
             svgElement.setAttribute('preserveAspectRatio', 'xMidYMid meet');
 
-            // Add style tag to override cls-7
+            // Add style tag to override cls-7 and set background
             const styleTag = document.createElement('style');
             styleTag.textContent = `
               .cls-7 {
                 fill: #fff !important;
                 stroke: #000 !important;
                 stroke-width: 1px !important;
+              }
+              svg {
+                background-color: white !important;
               }
             `;
             svgElement.appendChild(styleTag);
