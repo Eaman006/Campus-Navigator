@@ -86,10 +86,8 @@ const FloorMap = ({ floorNumber, academicBlock = 1 }) => {
             room.addEventListener("click", (e) => {
               const roomId = e.target.id;
               
-              // Reset previous selection
-              if (selectedRoom) {
-                selectedRoom.classList.remove("active");
-              }
+              // Remove active class from all rooms first
+              rooms.forEach(r => r.classList.remove("active"));
               
               if (floorData && floorData[roomId]) {
                 // Set new selection

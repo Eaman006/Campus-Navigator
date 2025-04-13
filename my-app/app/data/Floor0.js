@@ -1,5 +1,7 @@
 const floor0Data = {
   room012: { details: "Room 012: Auditorium1<br>Features: Air Conditioned, Projector, Wi-Fi", hasTeachers: false },
+  room013: { details: "Room 013: Classroom<br>Features: Air Conditioned, Projector, Wi-Fi", hasTeachers: false },
+  room014: { details: "Room 014: Classroom<br>Features: Air Conditioned, Projector, Wi-Fi", hasTeachers: false },
   room004: { details: "Room 004: Teacher's Cabin<br>Features: Desks, Computers, Wi-Fi", hasTeachers: true },
   room003: { details: "Room 003: Classroom<br>Features: Desks, Computers, Wi-Fi", hasTeachers: false },
   room005: { details: "Room 005: Electrical Panel Room", hasTeachers: false },
