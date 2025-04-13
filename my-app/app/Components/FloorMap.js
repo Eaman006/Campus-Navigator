@@ -15,11 +15,14 @@ const FloorMap = ({ floorNumber, academicBlock = 1 }) => {
 
   // Function to get the correct SVG path
   const getSvgPath = (floor, block) => {
-    // Only return path for Academic Block 1
-    if (block !== 1) {
-      return null;
+    if (block === 1) {
+      return `/Floor${floor}.svg`;
+    } else if (block === 2) {
+      return `/Block2/Floor${floor}.svg`;
+    } else if (block === 3) {
+      return `/arch/Floor${floor}.svg`;
     }
-    return `/Floor${floor}.svg`;
+    return null;
   };
 
   // Load floor data
@@ -28,8 +31,8 @@ const FloorMap = ({ floorNumber, academicBlock = 1 }) => {
       setIsLoading(true);
       setSvgError(false);
       try {
-        // Only load data for Academic Block 1
-        if (academicBlock === 1) {
+        // Load data for Academic Block 1, 2, and Architecture Building
+        if (academicBlock === 1 || academicBlock === 2 || academicBlock === 3) {
           const floorModule = await import(`@/app/data/Floor${floorNumber}.js`);
           setFloorData(floorModule.default);
         } else {
@@ -149,8 +152,8 @@ const FloorMap = ({ floorNumber, academicBlock = 1 }) => {
     );
   }
 
-  // Show "Map not available" message for all buildings except Academic Block 1
-  if (academicBlock !== 1) {
+  // Show "Map not available" message for all buildings except Academic Block 1, 2, and Architecture Building
+  if (academicBlock !== 1 && academicBlock !== 2 && academicBlock !== 3) {
     return (
       <div className="w-full h-full flex items-center justify-center">
         <div className="text-center">
