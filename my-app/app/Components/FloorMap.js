@@ -11,7 +11,10 @@ const FloorMap = ({ floorNumber, academicBlock = 1 }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [showTeacherDetails, setShowTeacherDetails] = useState(false);
   const [svgError, setSvgError] = useState(false);
+  const [zoomLevel, setZoomLevel] = useState(1);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
   const svgRef = useRef(null);
+  const containerRef = useRef(null);
 
   // Function to get the correct SVG path
   const getSvgPath = (floor, block) => {
@@ -147,6 +150,53 @@ const FloorMap = ({ floorNumber, academicBlock = 1 }) => {
     }
   };
 
+  const handleZoomIn = () => {
+    setZoomLevel(prev => Math.min(prev + 0.2, 3)); // Max zoom 3x
+  };
+
+  const handleZoomOut = () => {
+    setZoomLevel(prev => Math.max(prev - 0.2, 0.5)); // Min zoom 0.5x
+  };
+
+  const handleResetZoom = () => {
+    setZoomLevel(1);
+  };
+
+  const moveMap = (direction) => {
+    const step = 50; // Pixels to move per click
+    const container = containerRef.current;
+    const containerWidth = container.offsetWidth;
+    const containerHeight = container.offsetHeight;
+    const maxX = (containerWidth * (zoomLevel - 1)) / 2;
+    const maxY = (containerHeight * (zoomLevel - 1)) / 2;
+
+    let newX = position.x;
+    let newY = position.y;
+
+    switch (direction) {
+      case 'up':
+        newY = Math.min(position.y + step, maxY);
+        break;
+      case 'down':
+        newY = Math.max(position.y - step, -maxY);
+        break;
+      case 'left':
+        newX = Math.min(position.x + step, maxX);
+        break;
+      case 'right':
+        newX = Math.max(position.x - step, -maxX);
+        break;
+      default:
+        break;
+    }
+
+    setPosition({ x: newX, y: newY });
+  };
+
+  const handleResetPosition = () => {
+    setPosition({ x: 0, y: 0 });
+  };
+
   if (isLoading) {
     return (
       <div className="w-full h-full flex items-center justify-center">
@@ -190,16 +240,113 @@ const FloorMap = ({ floorNumber, academicBlock = 1 }) => {
 
   return (
     <div className="relative w-full h-full flex flex-col items-center justify-center">
-      {/* Centered Headi
-      
+      {/* Zoom Controls */}
+      <div className="absolute top-4 right-4 flex flex-col gap-2 z-10">
+        <div className="flex flex-col gap-2 bg-white rounded-lg shadow-lg p-2">
+          <button
+            onClick={handleZoomIn}
+            className="bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition-colors duration-200"
+            title="Zoom In"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+          </button>
+          <button
+            onClick={handleResetZoom}
+            className="bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition-colors duration-200"
+            title="Reset Zoom"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+            </svg>
+          </button>
+          <button
+            onClick={handleZoomOut}
+            className="bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition-colors duration-200"
+            title="Zoom Out"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+            </svg>
+          </button>
+        </div>
+        <div className="text-center text-sm text-gray-600 bg-white rounded-lg shadow-lg p-1">
+          {Math.round(zoomLevel * 100)}%
+        </div>
+      </div>
+
+      {/* Navigation Controls */}
+      {zoomLevel > 1 && (
+        <div className="absolute bottom-20 right-4 flex flex-col gap-2 z-10">
+          <div className="flex flex-col items-center gap-2 bg-white rounded-lg shadow-lg p-2">
+            <button
+              onClick={() => moveMap('up')}
+              className="bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition-colors duration-200"
+              title="Move Up"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+              </svg>
+            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={() => moveMap('left')}
+                className="bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition-colors duration-200"
+                title="Move Left"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              <button
+                onClick={handleResetPosition}
+                className="bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition-colors duration-200"
+                title="Reset Position"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                </svg>
+              </button>
+              <button
+                onClick={() => moveMap('right')}
+                className="bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition-colors duration-200"
+                title="Move Right"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+            <button
+              onClick={() => moveMap('down')}
+              className="bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition-colors duration-200"
+              title="Move Down"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* SVG Container */}
-      <div className="w-full h-full flex items-center justify-center p-0 overflow-hidden">
+      <div 
+        ref={containerRef}
+        className="w-full h-full flex items-center justify-center p-0 overflow-hidden"
+      >
         <object
           ref={svgRef}
           data={getSvgPath(floorNumber, academicBlock)}
           type="image/svg+xml"
           className="w-full h-full max-h-[180vh] object-contain"
-          style={{ maxWidth: '130%', transform: 'scale(1.2)' }}
+          style={{ 
+            maxWidth: '130%', 
+            transform: `scale(${zoomLevel}) translate(${position.x}px, ${position.y}px)`,
+            transformOrigin: 'center center',
+            transition: 'transform 0.2s ease-in-out'
+          }}
         >
           <div className="text-center">
             <p className="text-red-500 mb-2">Unable to load floor map</p>
