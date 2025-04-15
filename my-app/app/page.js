@@ -7,7 +7,7 @@ import { onAuthStateChanged } from "firebase/auth";
  // For App Router
 // import { useRouter } from "next/router"; // For Pages Router
 
-export default function HomePage() {
+const HomePage = () => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [isInitialized, setIsInitialized] = useState(false);
@@ -51,4 +51,6 @@ export default function HomePage() {
 
   // This will never be shown as we always redirect
   return null;
-}
+};
+
+export default HomePage;
