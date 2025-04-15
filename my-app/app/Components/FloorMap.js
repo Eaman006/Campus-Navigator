@@ -36,9 +36,12 @@ const FloorMap = ({ floorNumber, academicBlock = 1 }) => {
       setIsLoading(true);
       setSvgError(false);
       try {
-        // Load data for Academic Block 1, 2, and Architecture Building
+        // Load data for Academic Block 1, 2, Architecture Building, and Lab Complex
         if (academicBlock === 1 || academicBlock === 2 || academicBlock === 3) {
           const floorModule = await import(`@/app/data/Floor${floorNumber}.js`);
+          setFloorData(floorModule.default);
+        } else if (academicBlock === 4) {
+          const floorModule = await import(`@/app/data/lab/Floor${floorNumber}.js`);
           setFloorData(floorModule.default);
         } else {
           setFloorData(null);
@@ -83,7 +86,7 @@ const FloorMap = ({ floorNumber, academicBlock = 1 }) => {
             svgElement.appendChild(styleTag);
           }
 
-          const rooms = svgDoc.querySelectorAll("[id^='room']");
+          const rooms = svgDoc.querySelectorAll("[id^='room'], [id^='rect']");
           rooms.forEach((room) => {
             room.addEventListener("click", (e) => {
               const roomId = e.target.id;

@@ -34,6 +34,31 @@
      inkscape:current-layer="layer1" />
   <defs
      id="defs1">
+     <style>
+     .room {
+  cursor: pointer;
+  transition: fill 0.3s ease;
+  fill: #ffffff;
+  fill-opacity: 0.534483;
+  stroke: #241c1c;
+  stroke-width: 1;
+  paint-order: stroke markers fill;
+}
+
+.room:hover {
+  fill: #3b82f6;
+  fill-opacity: 1;
+}
+
+.room.active {
+  fill: #3b82f6;
+  fill-opacity: 1;
+}
+
+#room-details {
+  display: none;
+}
+     </style>
     <rect
        x="129.24224"
        y="804.49664"
@@ -147,7 +172,7 @@
        x="46.874516"
        y="260.88358" />
     <rect
-       style="fill:#ffffff;fill-opacity:0.534483;stroke:#241c1c;stroke-width:1;paint-order:stroke markers fill"
+       class="room"
        id="rect2"
        width="42.263905"
        height="27.27943"
@@ -161,7 +186,7 @@
        x="5.7632594"
        y="126.02328" />
     <rect
-       style="fill:#ffffff;fill-opacity:0.534483;stroke:#241c1c;stroke-width:1;paint-order:stroke markers fill"
+       class="room"
        id="rect4"
        width="32.274258"
        height="38.80595"
@@ -175,14 +200,14 @@
        x="89.522636"
        y="17.289774" />
     <rect
-       style="fill:#ffffff;fill-opacity:0.534483;stroke:#241c1c;stroke-width:1;paint-order:stroke markers fill"
+       class="room"
        id="rect6"
        width="33.811123"
        height="40.342823"
        x="135.62872"
        y="51.869331" />
     <rect
-       style="fill:#ffffff;fill-opacity:0.534483;stroke:#241c1c;stroke-width:1;paint-order:stroke markers fill"
+       class="room"
        id="rect7"
        width="41.8797"
        height="27.663651"
@@ -196,14 +221,14 @@
        x="147.92368"
        y="147.53946" />
     <rect
-       style="fill:#ffffff;fill-opacity:0.534483;stroke:#241c1c;stroke-width:1;paint-order:stroke markers fill"
+       class="room"
        id="rect9"
        width="41.879688"
        height="26.511"
        x="159.4502"
        y="168.2872" />
     <rect
-       style="fill:#ffffff;fill-opacity:0.534483;stroke:#241c1c;stroke-width:1;paint-order:stroke markers fill"
+       class="room"
        id="rect10"
        width="33.04269"
        height="44.184994"
