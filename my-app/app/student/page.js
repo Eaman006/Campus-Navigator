@@ -175,7 +175,7 @@ function Page() {
     setLoading(true);
 
     try {
-      const response = await fetch("https://mature-decades-psychology-trucks.trycloudflare.com/process_path", {
+      const response = await fetch("https://bits-covering-wt-carlo.trycloudflare.com/process_path", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -280,7 +280,7 @@ function Page() {
   }
 
   async function searchTeacher() {
-    const response = await fetch(`https://mature-decades-psychology-trucks.trycloudflare.com/search_teacher?teacher_name=${teacherName}`)
+    const response = await fetch(`https://bits-covering-wt-carlo.trycloudflare.com/search_teacher?teacher_name=${teacherName}`)
 
     if (response.ok) {
 
@@ -406,7 +406,7 @@ function Page() {
                 ) : (
                   // For different floor
                   <iframe
-                    src={`https://mature-decades-psychology-trucks.trycloudflare.com/${startFloorMap}`}
+                    src={`https://bits-covering-wt-carlo.trycloudflare.com${startFloorMap}`}
                     className="w-[400px] h-[400px]"
                   />
                 )}
@@ -419,7 +419,7 @@ function Page() {
                   <>
                   <h1 style={{ borderBottom: '3px solid #000' }} className='text-center font-bold text-xl'>End Location</h1>
                   <iframe
-                    src={`https://mature-decades-psychology-trucks.trycloudflare.com/${endFloorMap}`}
+                    src={`https://bits-covering-wt-carlo.trycloudflare.com${endFloorMap}`}
                     className="w-[400px] h-[400px]"
                   />
                   </>
