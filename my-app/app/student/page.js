@@ -12,6 +12,8 @@ import { useRouter } from 'next/navigation';
 import { Montserrat } from "next/font/google";
 import FloorMap from '../Components/FloorMap';
 import Link from 'next/link';
+import Previous from '../../public/prev.png'
+import Next from '../../public/next.png'
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -162,6 +164,8 @@ function Page() {
 
   // Function to handle API request
   const handleSearch = async () => {
+    setStartFloorMap('')
+    setEndFloorMap('')
 
     if (!start || !end) {
       alert("Please enter both start and end floors.");
@@ -171,7 +175,7 @@ function Page() {
     setLoading(true);
 
     try {
-      const response = await fetch("https://project-expo-group-90-production.up.railway.app/process_path", {
+      const response = await fetch("https://mature-decades-psychology-trucks.trycloudflare.com/process_path", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -217,6 +221,7 @@ function Page() {
     }
     if (mapRef.current) {
       mapRef.current.style.display = 'block';
+      handleSearchClose();
     }
   };
 
@@ -275,7 +280,7 @@ function Page() {
   }
 
   async function searchTeacher() {
-    const response = await fetch(`https://project-expo-group-90-production.up.railway.app/search_teacher?teacher_name=${teacherName}`)
+    const response = await fetch(`https://mature-decades-psychology-trucks.trycloudflare.com/search_teacher?teacher_name=${teacherName}`)
 
     if (response.ok) {
 
@@ -361,12 +366,77 @@ function Page() {
           </button>
         </div>
 
-        <div className="flex gap-6 mt-6 absolute top-5 left-150 z-50">
+        <div className="flex gap-6 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
           {/* Map Container */}
+          <div ref={mapRef} className="relative hidden bg-white rounded-lg border-3">
+            <div className='flex justify-between items-center w-[100%] p-4 h-[50px]' style={{ borderBottom: '3px solid #000' }}>
+              <button
+                onClick={toggleMap}
+                className=" p-2 rounded-m z-10 cursor-pointer"
+              >
+                <Image src='/prev.png' width={25} height={25} alt='previous' style={{ transform: 'rotate(180deg)' }} />
+              </button>
+              <h2 className="font-bold text-xl mb-2">Academic Block</h2>
+
+              {/* Swap Button Inside iFrame */}
+              <div className='flex items-center'>
+                <button
+                  onClick={toggleMap}
+                  className=" p-2 rounded-md z-10 cursor-pointer"
+                >
+                  <Image src='/next.png' width={25} height={25} alt='next' />
+                </button>
+                <button
+                  onClick={handleMapClose}
+                  className="p-2 rounded-md z-10 cursor-pointer"
+                >
+                  <Image src='/Close.png' width={30} height={30} alt='close' />
+                </button>
+              </div>
+            </div>
+
+            <div className='flex'>
+              {/* Start floor */}
+              <div style={{ borderRight: '3px solid #000' }}>
+                <h1 style={{ borderBottom: '3px solid #000' }} className='text-center font-bold text-xl'>Start Location</h1>
+
+                {svgData ? (
+                  // Display SVG directly for same floor
+                  <div dangerouslySetInnerHTML={{ __html: svgData }} className="w-100 h-100 rounded-lg" />
+                ) : (
+                  // For different floor
+                  <iframe
+                    src={`https://mature-decades-psychology-trucks.trycloudflare.com/${startFloorMap}`}
+                    className="w-100 h-100 rounded-lg"
+                  />
+                )}
+              </div>
+              {console.log(`https://mature-decades-psychology-trucks.trycloudflare.com/${startFloorMap}`)}
+
+              {/* End floor */}
+
+              <div>
+                {!svgData && (
+                  <>
+                  <h1 style={{ borderBottom: '3px solid #000' }} className='text-center font-bold text-xl'>End Location</h1>
+                  <iframe
+                    src={`https://mature-decades-psychology-trucks.trycloudflare.com/${endFloorMap}`}
+                    className="w-100 h-100 rounded-lg"
+                  />
+                  </>
+                )}
+
+
+
+              </div>
+            </div>
+
+          </div>
+        </div>
+        {/* <div className="flex gap-6 mt-6 absolute top-5 left-150 z-50">
           <div ref={mapRef} className="relative hidden bg-white p-4 shadow-[0px_4px_4px_0px_#00000040] rounded-lg">
             <h2 className="font-bold mb-2">{showStartMap ? "Start Floor Map" : "End Floor Map"}</h2>
 
-            {/* Swap Button Inside iFrame */}
             <button
               onClick={toggleMap}
               className="absolute top-2 right-16 bg-gray-300 p-2 rounded-md shadow-md z-10 cursor-pointer"
@@ -386,13 +456,13 @@ function Page() {
             ) : (
               // For different floor
               <iframe
-                src={`https://project-expo-group-90-production.up.railway.app/${showStartMap ? startFloorMap : endFloorMap}`}
+                src={`https://mature-decades-psychology-trucks.trycloudflare.com/${showStartMap ? startFloorMap : endFloorMap}`}
                 className="w-150 h-150 border rounded-lg"
               />
             )}
 
           </div>
-        </div>
+        </div> */}
 
 
         <div className={style['container-left']}>
