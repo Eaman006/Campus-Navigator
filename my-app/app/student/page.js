@@ -372,7 +372,7 @@ function Page() {
             <div className='flex justify-between items-center w-[100%] p-4 h-[50px]' style={{ borderBottom: '3px solid #000' }}>
               <button
                 onClick={toggleMap}
-                className=" p-2 rounded-m z-10 cursor-pointer"
+                className=" p-2 rounded-md z-10 cursor-pointer"
               >
                 <Image src='/prev.png' width={25} height={25} alt='previous' style={{ transform: 'rotate(180deg)' }} />
               </button>
@@ -402,16 +402,15 @@ function Page() {
 
                 {svgData ? (
                   // Display SVG directly for same floor
-                  <div dangerouslySetInnerHTML={{ __html: svgData }} className="w-100 h-100 rounded-lg" />
+                  <div dangerouslySetInnerHTML={{ __html: svgData }} className="w-[400px] h-[400px]" />
                 ) : (
                   // For different floor
                   <iframe
                     src={`https://mature-decades-psychology-trucks.trycloudflare.com/${startFloorMap}`}
-                    className="w-100 h-100 rounded-lg"
+                    className="w-[400px] h-[400px]"
                   />
                 )}
               </div>
-              {console.log(`https://mature-decades-psychology-trucks.trycloudflare.com/${startFloorMap}`)}
 
               {/* End floor */}
 
@@ -421,7 +420,7 @@ function Page() {
                   <h1 style={{ borderBottom: '3px solid #000' }} className='text-center font-bold text-xl'>End Location</h1>
                   <iframe
                     src={`https://mature-decades-psychology-trucks.trycloudflare.com/${endFloorMap}`}
-                    className="w-100 h-100 rounded-lg"
+                    className="w-[400px] h-[400px]"
                   />
                   </>
                 )}
