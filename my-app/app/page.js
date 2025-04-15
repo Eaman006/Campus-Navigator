@@ -7,7 +7,7 @@ import { onAuthStateChanged } from "firebase/auth";
  // For App Router
 // import { useRouter } from "next/router"; // For Pages Router
 
-export default function Home() {
+export default function HomePage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [isInitialized, setIsInitialized] = useState(false);
