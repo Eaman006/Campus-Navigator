@@ -46,7 +46,7 @@
     padding-top: 1%;
     display: flex;
     flex-direction: column;
-    background-color: skyblue;
+    /* background-color: skyblue; */
 }
 
 .sub-container-right{
