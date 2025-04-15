@@ -634,7 +634,7 @@ function Page() {
                 {/* Floor Dropdown Menu */}
                 {showFloorDropdown4 && (
                   <div className="w-full bg-white border-l-2 border-blue-500 ml-4">
-                    {[0, 1, 2, 3, 4, 5].map((floor) => (
+                    {[0, 1, 2].map((floor) => (
                       <div
                         key={floor}
                         className={`px-4 py-2 text-sm cursor-pointer hover:bg-gray-100 flex items-center gap-2 ${selectedFloor === floor && selectedBuilding === 'Lab Complex' ? 'bg-blue-50 text-blue-600' : ''
