@@ -8,7 +8,7 @@ const EventListClient = () => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await fetch('https://mature-decades-psychology-trucks.trycloudflare.com/events/');
+        const response = await fetch('http://localhost:5000/events/');
         const data = await response.json();
         setEvents(data);
         setLoading(false);
