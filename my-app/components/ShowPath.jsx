@@ -244,7 +244,7 @@ function ShowPath({ buttonRef }) {
                         >
                             <Image src='/prev.png' width={25} height={25} alt='previous' style={{ transform: 'rotate(180deg)' }} />
                         </button>
-                        <h2 className="font-bold text-xl mb-2">Academic Block</h2>
+                        <h2 className="font-bold text-xl mb-2">{(showBuilding1Maps)?("Academic Block"):("Lab Complex")}</h2>
 
                         {/* Swap Button Inside iFrame */}
                         <div className='flex items-center'>
