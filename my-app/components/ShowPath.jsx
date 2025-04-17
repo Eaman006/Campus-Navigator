@@ -28,6 +28,7 @@ function ShowPath({ buttonRef }) {
     const handleSearch = async () => {
         setStartFloorMap('')
         setEndFloorMap('')
+        setShowBuilding1Maps(true)
 
         if (!start || !end) {
             alert("Please enter both start and end floors.");
@@ -74,10 +75,12 @@ function ShowPath({ buttonRef }) {
                     console.error("Unexpected response format");
                 }
             } else {
-                console.error("Error fetching path:", response.statusText);
+                alert("Error fetching path:", response.statusText);
+                return;
             }
         } catch (error) {
-            console.error("Request failed:", error);
+            alert("Request failed:", error);
+            return;
         } finally {
             setLoading(false);
         }
@@ -112,10 +115,12 @@ function ShowPath({ buttonRef }) {
                 setEndFloorMapBuilding2(data.files[building2].end_floor);
 
             } else {
-                console.error("Error fetching path:", response.statusText);
+                alert("Error fetching path:", response.statusText);
+                return;
             }
         } catch (error) {
-            console.error("Request failed:", error);
+            alert("Request failed:", error);
+            return;
         } finally {
             setLoading(false);
         }
@@ -128,7 +133,7 @@ function ShowPath({ buttonRef }) {
 
 
     const swapBuilding = () => {
-        if(navType=='single'){
+        if (navType == 'single') {
             return
         }
         setShowBuilding1Maps(prev => !prev);
@@ -156,7 +161,7 @@ function ShowPath({ buttonRef }) {
         <div>
             <div ref={buttonRef} className="absolute hidden top-0 left-[7%] bg-white text-black shadow-[0px_4px_4px_0px_#00000040] rounded-lg p-4 w-96 z-50">
                 {/* Close Button */}
-                <div className="flex justify-end">
+                <div className="flex justify-end mb-2">
                     <button className="text-gray-500 hover:text-black cursor-pointer text-2xl" onClick={handleSearchClose}>&times;</button>
                 </div>
 
@@ -171,26 +176,33 @@ function ShowPath({ buttonRef }) {
                     <option value="multi">Multi-Building</option>
                 </select>
 
-                {/* Common Inputs */}
-                <input
-                    type="text"
-                    placeholder="Choose starting location"
-                    className="border p-2 rounded-md w-full"
-                    value={start}
-                    onChange={(e) => setStart(e.target.value)}
-                />
-                <input
-                    type="text"
-                    placeholder="Choose end location"
-                    className="border mt-2 p-2 rounded-md w-full mb-2"
-                    value={end}
-                    onChange={(e) => setEnd(e.target.value)}
-                />
+                {/* Input with Start Icon */}
+                <div className="flex items-center border p-2 rounded-md mb-2 bg-white">
+                    <Image src="/start.png" alt="Start" width={20} height={20} className="mr-2" />
+                    <input
+                        type="text"
+                        placeholder="Choose starting location"
+                        className="w-full outline-none text-black"
+                        value={start}
+                        onChange={(e) => setStart(e.target.value)}
+                    />
+                </div>
+
+                {/* Input with End Icon */}
+                <div className="flex items-center border p-2 rounded-md mb-2 bg-white">
+                    <Image src="/destination.png" alt="End" width={20} height={20} className="mr-2" />
+                    <input
+                        type="text"
+                        placeholder="Choose end location"
+                        className="w-full outline-none text-black"
+                        value={end}
+                        onChange={(e) => setEnd(e.target.value)}
+                    />
+                </div>
 
                 {/* Conditional Building Inputs for Multi-Building */}
                 {navType === "multi" && (
                     <>
-
                         <select
                             className="border p-2 rounded-md w-full text-black mb-2"
                             value={building1}
@@ -209,30 +221,32 @@ function ShowPath({ buttonRef }) {
                             <option value="AB-01">AB-01</option>
                             <option value="Lab-Complex">Lab-Complex</option>
                         </select>
-
                     </>
                 )}
 
                 {/* Preference Selector */}
-                {navType == 'single' && <select
-                    type="text"
-                    className="border mt-2 p-2 rounded-md w-full text-black"
-                    ref={preferenceRef}
-                >
-                    <option value="Stairs" hidden defaultChecked>select preference</option>
-                    <option value="Stairs">Stairs</option>
-                    <option value="Lift">Lift</option>
-                </select>}
+                {navType === 'single' && (
+                    <select
+                        type="text"
+                        className="border mt-2 p-2 rounded-md w-full text-black"
+                        ref={preferenceRef}
+                    >
+                        <option value="Stairs" hidden defaultChecked>Select preference</option>
+                        <option value="Stairs">Stairs</option>
+                        <option value="Lift">Lift</option>
+                    </select>
+                )}
 
                 {/* Search Button */}
                 <button
-                    onClick={(navType == 'single' ? (handleSearch) : (handleSearchMulti))}
+                    onClick={navType === 'single' ? handleSearch : handleSearchMulti}
                     className="bg-blue-500 text-white p-3 rounded-md w-full mt-4 cursor-pointer"
                     disabled={loading}
                 >
                     {loading ? "Loading..." : "Search"}
                 </button>
             </div>
+
 
             <div className="flex gap-6 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
                 {/* Map Container */}
@@ -244,7 +258,17 @@ function ShowPath({ buttonRef }) {
                         >
                             <Image src='/prev.png' width={25} height={25} alt='previous' style={{ transform: 'rotate(180deg)' }} />
                         </button>
-                        <h2 className="font-bold text-xl mb-2">{(showBuilding1Maps)?("Academic Block"):("Lab Complex")}</h2>
+                        <h2 className="font-bold text-xl mb-2">
+                            {
+                                navType === 'single'
+                                    ? 'Academic Block'
+                                    : navType === 'multi'
+                                        ? showBuilding1Maps
+                                            ? (building1 === 'Lab-Complex' ? 'Lab Complex' : 'Academic Block')
+                                            : (building2 === 'Lab-Complex' ? 'Lab Complex' : 'Academic Block')
+                                        : 'Select Navigation Type'
+                            }
+                        </h2>
 
                         {/* Swap Button Inside iFrame */}
                         <div className='flex items-center'>
