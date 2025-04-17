@@ -4,16 +4,15 @@ import style from './Student.module.css'
 import Image from 'next/image';
 import Recent from '../../public/recent.png'
 import Hamburger from '../../public/hamburger.png'
-import Direction from '../../public/direction.png'
-import Search from '../../public/search.png'
 import { auth } from "@/lib/firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { useRouter } from 'next/navigation';
 import { Montserrat } from "next/font/google";
 import FloorMap from '../Components/FloorMap';
 import Link from 'next/link';
-import Previous from '../../public/prev.png'
-import Next from '../../public/next.png'
+import Teacher from '@/components/Teacher';
+import ShowPath from '@/components/ShowPath';
+
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -27,20 +26,8 @@ function Page() {
   const [isLoading, setIsLoading] = useState(true);
   const [isInitialized, setIsInitialized] = useState(false);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
-  const [startFloorMap, setStartFloorMap] = useState("");
-  const [endFloorMap, setEndFloorMap] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [showStartMap, setShowStartMap] = useState(true);
-  const [start, setStart] = useState("");
-  const [end, setEnd] = useState("");
-  const [svgData, setSvgData] = useState(null);
-  const [teacherName, setTeacherName] = useState('');
-  const [teacherDetails, setTeacherDetails] = useState({});
-  const [isTeacherDetailPopupOpen, setIsTeacherDetailPopupOpen] = useState(false);
-  const mapRef = useRef(null);
-  const inputRef = useRef(null);
-  const router = useRouter();
   const [showFloorDropdown, setShowFloorDropdown] = useState(false);
+  const router = useRouter();
   const [showFloorDropdown2, setShowFloorDropdown2] = useState(false);
   const [showFloorDropdown3, setShowFloorDropdown3] = useState(false);
   const [showFloorDropdown4, setShowFloorDropdown4] = useState(false);
@@ -50,10 +37,10 @@ function Page() {
   const [isHomeSelected, setIsHomeSelected] = useState(true);
   const [showFloorMap, setShowFloorMap] = useState(false);
   const [showAcademicDropdown, setShowAcademicDropdown] = useState(false);
-  const preferenceRef = useRef('Stairs');
   const [events, setEvents] = useState([]);
   const [isLoadingEvents, setIsLoadingEvents] = useState(false);
   const [registeredEvents, setRegisteredEvents] = useState(new Set());
+  const buttonRef = useRef(null);
 
   // Effect for authentication and initialization
   useEffect(() => {
@@ -149,25 +136,6 @@ function Page() {
     setIsOpen(!isOpen)
   }
 
-  const handleFocus = () => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
-  };
-
-
-  const swapFloors = () => {
-    setStart(end);
-    setEnd(start);
-  };
-
-  const buttonRef = useRef(null);
-
-  const handleSearchClose = () => {
-    if (buttonRef.current) {
-      buttonRef.current.style.display = "none";
-    }
-  }
   const handleSearchOpen = (e) => {
     e.stopPropagation();
     if (buttonRef.current) {
@@ -175,82 +143,69 @@ function Page() {
     }
   }
 
-  const toggleMap = () => {
-    setShowStartMap((prev) => !prev);
-  };
 
-  const handleMapClose = () => {
-    if (mapRef.current) {
-      mapRef.current.style.display = 'none';
-    }
-    setEndFloorMap('')
-    setStartFloorMap('')
-    setSvgData('')
-  }
+  // // Function to handle API request
+  // const handleSearch = async () => {
+  //   setStartFloorMap('')
+  //   setEndFloorMap('')
 
+  //   if (!start || !end) {
+  //     alert("Please enter both start and end floors.");
+  //     return;
+  //   }
 
-  // Function to handle API request
-  const handleSearch = async () => {
-    setStartFloorMap('')
-    setEndFloorMap('')
+  //   setLoading(true);
 
-    if (!start || !end) {
-      alert("Please enter both start and end floors.");
-      return;
-    }
+  //   try {
+  //     const response = await fetch("http://127.0.0.1:5000/process_path", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({
+  //         start,
+  //         end,
+  //         preference: preferenceRef.current.value,
+  //         building: "AB-01",
+  //       }),
+  //     });
 
-    setLoading(true);
+  //     if (response.ok) {
+  //       const contentType = response.headers.get("Content-Type");
 
-    try {
-      const response = await fetch("https://bits-covering-wt-carlo.trycloudflare.com/process_path", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          start,
-          end,
-          preference: preferenceRef.current.value,
-          building: "AB-01",
-        }),
-      });
+  //       if (contentType.includes("application/json")) {
+  //         // Complex Path - JSON Response
+  //         const data = await response.json();
+  //         if (data.error) {
+  //           alert(data.error);
+  //           return;
+  //         }
 
-      if (response.ok) {
-        const contentType = response.headers.get("Content-Type");
-
-        if (contentType.includes("application/json")) {
-          // Complex Path - JSON Response
-          const data = await response.json();
-          if (data.error) {
-            alert(data.error);
-            return;
-          }
-
-          setStartFloorMap(data.files.start_floor);
-          setEndFloorMap(data.files.end_floor);
-          setSvgData(null); // Reset SVG data
-        } else if (contentType.includes("image/svg+xml")) {
-          // Same Floor - SVG Response
-          const svgText = await response.text();
-          setSvgData(svgText); // Store the SVG text
-          setStartFloorMap(null);
-          setEndFloorMap(null);
-        } else {
-          console.error("Unexpected response format");
-        }
-      } else {
-        console.error("Error fetching path:", response.statusText);
-      }
-    } catch (error) {
-      console.error("Request failed:", error);
-    } finally {
-      setLoading(false);
-    }
-    if (mapRef.current) {
-      mapRef.current.style.display = 'block';
-      handleSearchClose();
-    }
-  };
+  //         setStartFloorMap(data.files.start_floor);
+  //         setEndFloorMap(data.files.end_floor);
+  //         setSvgData(null); // Reset SVG data
+  //       } else if (contentType.includes("image/svg+xml")) {
+  //         // Same Floor - SVG Response
+  //         const svgText = await response.text();
+  //         setSvgData(svgText); // Store the SVG text
+  //         setStartFloorMap(null);
+  //         setEndFloorMap(null);
+  //       } else {
+  //         console.error("Unexpected response format");
+  //       }
+  //     } else {
+  //       console.error("Error fetching path:", response.statusText);
+  //     }
+  //   } catch (error) {
+  //     console.error("Request failed:", error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  //   if (mapRef.current) {
+  //     mapRef.current.style.display = 'block';
+  //     handleSearchClose();
+  //   }
+  // };
 
   // Handle logout
   const handleLogout = async () => {
@@ -324,195 +279,12 @@ function Page() {
     );
   }
 
-  // Logic to find teacher's detail by their name
-
-  function teacherChangeHandler(e) {
-    setTeacherName(e.target.value)
-  }
-
-  async function searchTeacher() {
-    const response = await fetch(`https://bits-covering-wt-carlo.trycloudflare.com/search_teacher?teacher_name=${teacherName}`)
-
-    if (response.ok) {
-
-      const data = await response.json();
-
-      if (data.error) {
-        alert(data.error);
-        return;
-      }
-
-      // save value for pop-up to show teacher details
-      setTeacherDetails(data)
-      setIsTeacherDetailPopupOpen(true)
-      console.log(data.Cabin)
-      setTeacherName('')
-    }
-  }
-
-  function teacherSearchHandler(e) {
-    e.key === "Enter" && searchTeacher()
-  }
 
   return (
     <div className="relative w-full h-screen select-none">
       <div className={style['container']}>
 
-        <div ref={buttonRef} className="absolute hidden top-0 left-[7%] bg-white text-black shadow-[0px_4px_4px_0px_#00000040] rounded-lg p-4 w-96 z-50">
-          {/* Close Button */}
-          <div className="flex justify-end">
-            <button className="text-gray-500 hover:text-black cursor-pointer text-2xl" onClick={handleSearchClose}>&times;</button>
-          </div>
-
-          {/* Input Section */}
-          <div className="flex items-center gap-4">
-            {/* Left Icons */}
-            <div className="flex flex-col items-center gap-2">
-              <Image src="/start.png" alt="Start" width={20} height={20} />
-              <div className="h-6 border-l border-gray-400"></div>
-              <Image src="/destination.png" alt="End" width={20} height={20} />
-            </div>
-
-            {/* Input Fields */}
-            <div className="flex flex-col flex-grow">
-
-              <input
-                type="text"
-                placeholder="Choose starting floor"
-                className="border p-2 rounded-md w-full"
-                value={start}
-                onChange={(e) => setStart(e.target.value)}
-              />
-              <input
-                type="text"
-                placeholder="Choose end floor"
-                className="border mt-2 p-2 rounded-md w-full"
-                value={end}
-                onChange={(e) => setEnd(e.target.value)}
-              />
-              <select
-                type="text"
-                placeholder="Choose end floor"
-                className="border mt-2 p-2 rounded-md w-full text-black"
-                ref={preferenceRef}
-              >
-                <option value="Stairs" hidden defaultChecked>select preference</option>
-                <option value="Stairs">Stairs</option>
-                <option value="Lift">Lift</option>
-              </select>
-            </div>
-
-            {/* Swap Button */}
-            <button onClick={swapFloors} className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 cursor-pointer">
-              <Image src="/Swap.png" alt="Swap" width={20} height={20} />
-            </button>
-          </div>
-          {/* Search Button */}
-          <button
-            onClick={handleSearch}
-            className="bg-blue-500 text-white p-3 rounded-md w-full mt-4 cursor-pointer"
-            disabled={loading}
-          >
-            {loading ? "Loading..." : "Search"}
-          </button>
-        </div>
-
-        <div className="flex gap-6 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
-          {/* Map Container */}
-          <div ref={mapRef} className="relative hidden bg-white rounded-lg border-3">
-            <div className='flex justify-between items-center w-[100%] p-4 h-[50px]' style={{ borderBottom: '3px solid #000' }}>
-              <button
-                onClick={toggleMap}
-                className=" p-2 rounded-md z-10 cursor-pointer"
-              >
-                <Image src='/prev.png' width={25} height={25} alt='previous' style={{ transform: 'rotate(180deg)' }} />
-              </button>
-              <h2 className="font-bold text-xl mb-2">Academic Block</h2>
-
-              {/* Swap Button Inside iFrame */}
-              <div className='flex items-center'>
-                <button
-                  onClick={toggleMap}
-                  className=" p-2 rounded-md z-10 cursor-pointer"
-                >
-                  <Image src='/next.png' width={25} height={25} alt='next' />
-                </button>
-                <button
-                  onClick={handleMapClose}
-                  className="p-2 rounded-md z-10 cursor-pointer"
-                >
-                  <Image src='/Close.png' width={30} height={30} alt='close' />
-                </button>
-              </div>
-            </div>
-
-            <div className='flex'>
-              {/* Start floor */}
-              <div style={{ borderRight: '3px solid #000' }}>
-                <h1 style={{ borderBottom: '3px solid #000' }} className='text-center font-bold text-xl'>Start Location</h1>
-
-                {svgData ? (
-                  // Display SVG directly for same floor
-                  <div dangerouslySetInnerHTML={{ __html: svgData }} className="w-[400px] h-[400px]" />
-                ) : (
-                  // For different floor
-                  <iframe
-                    src={`https://bits-covering-wt-carlo.trycloudflare.com${startFloorMap}`}
-                    className="w-[400px] h-[400px]"
-                  />
-                )}
-              </div>
-
-              {/* End floor */}
-
-              <div>
-                {!svgData && (
-                  <>
-                  <h1 style={{ borderBottom: '3px solid #000' }} className='text-center font-bold text-xl'>End Location</h1>
-                  <iframe
-                    src={`https://bits-covering-wt-carlo.trycloudflare.com${endFloorMap}`}
-                    className="w-[400px] h-[400px]"
-                  />
-                  </>
-                )}
-
-
-
-              </div>
-            </div>
-
-          </div>
-        </div>
-        {/* <div className="flex gap-6 mt-6 absolute top-5 left-150 z-50">
-          <div ref={mapRef} className="relative hidden bg-white p-4 shadow-[0px_4px_4px_0px_#00000040] rounded-lg">
-            <h2 className="font-bold mb-2">{showStartMap ? "Start Floor Map" : "End Floor Map"}</h2>
-
-            <button
-              onClick={toggleMap}
-              className="absolute top-2 right-16 bg-gray-300 p-2 rounded-md shadow-md z-10 cursor-pointer"
-            >
-              🔄 Swap Map
-            </button>
-            <button
-              onClick={handleMapClose}
-              className="absolute top-2 right-2 bg-gray-300 p-2 rounded-md shadow-md z-10 cursor-pointer"
-            >
-              <Image src='/Close.png' width={30} height={30} alt='close' />
-            </button>
-
-            {svgData ? (
-              // Display SVG directly for same floor
-              <div dangerouslySetInnerHTML={{ __html: svgData }} className="w-[500px] h-[500px] border rounded-lg" />
-            ) : (
-              // For different floor
-              <iframe
-                src={`https://mature-decades-psychology-trucks.trycloudflare.com/${showStartMap ? startFloorMap : endFloorMap}`}
-                className="w-150 h-150 border rounded-lg"
-              />
-            )}
-
-          </div>
-        </div> */}
+        <ShowPath buttonRef={buttonRef}/>
 
 
         <div className={style['container-left']}>
@@ -597,7 +369,7 @@ function Page() {
                       className={`transform transition-transform duration-200 ${showFloorDropdown2 ? 'rotate-180' : ''}`}
                     />
                   </span>
-                  
+
                 </div>
 
                 {/* Floor Dropdown Menu */}
@@ -711,20 +483,7 @@ function Page() {
         </div>
         <div className={style['container-right']}>
           <div className={style['sub-container-right']}>
-            <div className={[style['input-container'], 'shadow-[0px_4px_4px_0px_#00000040]'].join(' ')} onClick={handleFocus}>
-              <input
-                ref={inputRef}
-                type="text"
-                placeholder='Search any Professor'
-                value={teacherName}
-                onChange={teacherChangeHandler}
-                onKeyDown={teacherSearchHandler}
-              />
-              <div className={style['input-logo-container']}>
-                <Image src={Search} width={50} height={50} alt='logo' onClick={searchTeacher} className='cursor-pointer hover:scale-110 duration-300' />
-                <Image onClick={handleSearchOpen} className='cursor-pointer hover:scale-110 duration-300' src={Direction} width={50} height={50} alt='logo' />
-              </div>
-            </div>
+            <Teacher handleSearchOpen={handleSearchOpen} />
             <div className="relative">
               <div
                 className="relative w-10 h-10 cursor-pointer"
@@ -758,25 +517,6 @@ function Page() {
             </div>
           </div>
 
-          {/* Popup Modal */}
-          {isTeacherDetailPopupOpen && teacherDetails && (
-            <div className="absolute top-20 left-30 flex items-center justify-center bg-opacity-50">
-              <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-                <h2 className="text-xl font-bold mb-4">Professor Details</h2>
-                <p><strong>Cabin:</strong> {teacherDetails.Cabin || "N/A"}</p>
-                <p><strong>Matched Name:</strong> {teacherDetails.Matched_Name || "N/A"}</p>
-                <p><strong>Phone Number:</strong> {teacherDetails["Phone Number"] || "N/A"}</p>
-                <p><strong>Room No:</strong> {teacherDetails.Room_No || "N/A"}</p>
-
-                <button
-                  onClick={() => setIsTeacherDetailPopupOpen(false)}
-                  className="mt-4 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 cursor-pointer"
-                >
-                  Close
-                </button>
-              </div>
-            </div>)}
-
           {/* Floor Map Display */}
           <div className="w-full h-[calc(100%-4rem)] mt-4 overflow-hidden">
             {isLoading ? (
@@ -808,14 +548,14 @@ function Page() {
                         )}
                         <div className="mt-4">
                           {registeredEvents.has(event.id) ? (
-                            <button 
+                            <button
                               className="bg-green-500 text-white px-4 py-2 rounded-md cursor-not-allowed"
                               disabled
                             >
                               Registered
                             </button>
                           ) : (
-                            <button 
+                            <button
                               onClick={() => handleRegister(event.id)}
                               className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors"
                             >
