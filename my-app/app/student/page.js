@@ -44,12 +44,16 @@ function Page() {
   const [showFloorDropdown2, setShowFloorDropdown2] = useState(false);
   const [showFloorDropdown3, setShowFloorDropdown3] = useState(false);
   const [showFloorDropdown4, setShowFloorDropdown4] = useState(false);
+  const [showEvents, setShowEvents] = useState(false);
   const [selectedBuilding, setSelectedBuilding] = useState(null);
   const [selectedFloor, setSelectedFloor] = useState(null);
   const [isHomeSelected, setIsHomeSelected] = useState(true);
   const [showFloorMap, setShowFloorMap] = useState(false);
   const [showAcademicDropdown, setShowAcademicDropdown] = useState(false);
   const preferenceRef = useRef('Stairs');
+  const [events, setEvents] = useState([]);
+  const [isLoadingEvents, setIsLoadingEvents] = useState(false);
+  const [registeredEvents, setRegisteredEvents] = useState(new Set());
 
   // Effect for authentication and initialization
   useEffect(() => {
@@ -117,6 +121,29 @@ function Page() {
 
     initializeMediaLoading();
   }, [isInitialized]);
+
+  // Effect for fetching events
+  useEffect(() => {
+    const fetchEvents = async () => {
+      if (showEvents) {
+        setIsLoadingEvents(true);
+        try {
+          const response = await fetch('http://localhost:5000/events/');
+          if (!response.ok) {
+            throw new Error('Failed to fetch events');
+          }
+          const data = await response.json();
+          setEvents(data);
+        } catch (error) {
+          console.error('Error fetching events:', error);
+        } finally {
+          setIsLoadingEvents(false);
+        }
+      }
+    };
+
+    fetchEvents();
+  }, [showEvents]);
 
   const handleOpen = () => {
     setIsOpen(!isOpen)
@@ -262,6 +289,30 @@ function Page() {
     setShowFloorDropdown4(false);
     // Select home
     setIsHomeSelected(true);
+  };
+
+  // Function to handle event registration
+  const handleRegister = async (eventId) => {
+    try {
+      const response = await fetch(`http://localhost:5000/events/register/${eventId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: auth.currentUser?.uid,
+        }),
+      });
+
+      if (response.ok) {
+        setRegisteredEvents(prev => new Set([...prev, eventId]));
+      } else {
+        throw new Error('Registration failed');
+      }
+    } catch (error) {
+      console.error('Error registering for event:', error);
+      alert('Failed to register for the event. Please try again.');
+    }
   };
 
   // Show loading spinner while initializing
@@ -475,6 +526,10 @@ function Page() {
                 <span><Image src='/Home.png' width={30} height={30} alt='home' /></span>
                 <span className={isHomeSelected ? 'text-blue-600' : ''}> Home</span>
               </div>
+              <div className='w-full mt-4 cursor-pointer flex items-center' onClick={() => setShowEvents(!showEvents)}>
+                <span><Image src='/Events.png' width={30} height={30} alt='events' /></span>
+                <span className={showEvents ? 'text-blue-600' : ''}> Events</span>
+              </div>
               <div className='relative'>
                 <div
                   className={`w-full mt-4 relative cursor-pointer flex items-center ${selectedBuilding === 'Academic Block' ? 'text-blue-600' : ''
@@ -542,6 +597,7 @@ function Page() {
                       className={`transform transition-transform duration-200 ${showFloorDropdown2 ? 'rotate-180' : ''}`}
                     />
                   </span>
+                  
                 </div>
 
                 {/* Floor Dropdown Menu */}
@@ -725,6 +781,57 @@ function Page() {
           <div className="w-full h-[calc(100%-4rem)] mt-4 overflow-hidden">
             {isLoading ? (
               <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500"></div>
+            ) : showEvents ? (
+              <div className="w-full h-full p-4 overflow-y-auto">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-xl font-bold">Upcoming Events</h2>
+                  <button
+                    onClick={() => setShowEvents(false)}
+                    className="text-gray-500 hover:text-gray-700"
+                  >
+                    ✕
+                  </button>
+                </div>
+                {isLoadingEvents ? (
+                  <div className="flex justify-center items-center h-full">
+                    <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500"></div>
+                  </div>
+                ) : events.length > 0 ? (
+                  <div className="grid gap-4">
+                    {events.map((event, index) => (
+                      <div key={index} className="bg-white p-4 rounded-lg shadow-md">
+                        <h3 className="font-bold text-lg">{event.title}</h3>
+                        <p className="text-gray-600">Date: {event.date}</p>
+                        <p className="text-gray-600">Location: {event.location}</p>
+                        {event.description && (
+                          <p className="text-gray-600 mt-2">{event.description}</p>
+                        )}
+                        <div className="mt-4">
+                          {registeredEvents.has(event.id) ? (
+                            <button 
+                              className="bg-green-500 text-white px-4 py-2 rounded-md cursor-not-allowed"
+                              disabled
+                            >
+                              Registered
+                            </button>
+                          ) : (
+                            <button 
+                              onClick={() => handleRegister(event.id)}
+                              className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors"
+                            >
+                              Register
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center text-gray-500 mt-8">
+                    No upcoming events found
+                  </div>
+                )}
+              </div>
             ) : showFloorMap && selectedFloor !== null ? (
               <div className="w-full h-full overflow-hidden">
                 <div className="flex justify-center items-center mb-4">
