@@ -18,12 +18,8 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <AdminLayoutWrapper>
-          {children}
-        </AdminLayoutWrapper>
-      </body>
-    </html>
+    <AdminLayoutWrapper>
+      {children}
+    </AdminLayoutWrapper>
   );
 }

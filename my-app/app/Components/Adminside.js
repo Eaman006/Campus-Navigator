@@ -1,13 +1,11 @@
 "use client"
 import { FaHome } from "react-icons/fa";
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { MdOutlineMenu } from "react-icons/md";
 import { MdEventNote } from "react-icons/md";
 import { FaClipboardList } from "react-icons/fa";
 import { MdRoomPreferences } from "react-icons/md";
 import { CiLogout } from "react-icons/ci";
-import { auth } from "@/lib/firebase";
-import { signOut } from "firebase/auth";
 import Image from "next/image";
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -18,18 +16,15 @@ const Adminside = () => {
   const getActivePath=(path)=>{
     return pathname === path ? 'text-blue-700 bg-gray-200' : '';
   }
-  const [user, setUser] = useState(null);
   const [isExpanded, setIsExpanded] = useState(false);
 
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        setUser(user);
-      }
-    });
-
-    return () => unsubscribe();
-  }, []);
+  const handleLogout = () => {
+    // Clear any stored authentication data
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    // Redirect to login page
+    router.push('/admin');
+  };
 
   return (
     <div className={`text-black shadow-blue-300 shadow-xl transition-all duration-300 bg-white ${isExpanded ? 'w-1/5' : 'w-16'} absolute h-[92.5vh]`}>
@@ -42,21 +37,11 @@ const Adminside = () => {
       </div>
       <div className='flex gap-5 m-2 items-center'>
         <div className='w-10 h-10 rounded-full overflow-hidden'>
-          {user?.photoURL ? (
-            <Image
-              src={user.photoURL}
-              alt="Profile"
-              width={40}
-              height={40}
-              className="object-cover w-full h-full"
-            />
-          ) : (
-            <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500">
-              {user?.email?.[0]?.toUpperCase() || 'U'}
-            </div>
-          )}
+          <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500">
+            U
+          </div>
         </div>
-        <div className={`font-medium ${!isExpanded && 'hidden'}`}>{user?.displayName || user?.email || 'User'}</div>
+        <div className={`font-medium ${!isExpanded && 'hidden'}`}>Admin</div>
       </div>
       <Link href="/cpanel">
       <div className={`my-3 mx-2 px-2 hover:bg-gray-200 rounded-md py-2 ${getActivePath("/cpanel")}` }>
@@ -91,14 +76,7 @@ const Adminside = () => {
       </div>
       </Link>
       <div className='font-bold text-xl flex gap-2 absolute bottom-5 mx-2 cursor-pointer hover:bg-gray-200 p-2 rounded-md'
-        onClick={async () => {
-          try {
-            await signOut(auth);
-            router.push('/admin');
-          } catch (error) {
-            console.error('Error signing out:', error);
-          }
-        }}>
+        onClick={handleLogout}>
         <CiLogout size={24} />
         <button className={`${!isExpanded && 'hidden'}`}>Logout</button>
       </div>

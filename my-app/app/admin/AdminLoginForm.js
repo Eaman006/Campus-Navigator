@@ -1,23 +1,58 @@
 'use client'
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Lock, User } from 'lucide-react';
+import { Lock, User, Eye, EyeOff } from 'lucide-react';
 
 const AdminLoginForm = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isFormValid, setIsFormValid] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
-  const handleSubmit = (e) => {
+  useEffect(() => {
+    // Check if both fields are filled
+    setIsFormValid(username.trim() !== '' && password.trim() !== '');
+  }, [username, password]);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!isFormValid) return;
+    
     setIsLoading(true);
-    // Simulate API call
-    setTimeout(() => {
-      setError('Login functionality will be implemented soon');
+    setError('');
+
+    try {
+      const response = await fetch('http://localhost:5000/user/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: username.trim(),
+          password: password.trim()
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Login failed');
+      }
+
+      // If login is successful, redirect to admin dashboard
+      router.push('/cpanel');
+    } catch (error) {
+      setError(error.message || 'An error occurred during login');
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
   };
 
   return (
@@ -38,7 +73,7 @@ const AdminLoginForm = () => {
         <div className="space-y-4">
           <div className="space-y-2">
             <label htmlFor="username" className="text-sm font-medium text-gray-700">
-              Username
+              Username <span className="text-red-500">*</span>
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -58,7 +93,7 @@ const AdminLoginForm = () => {
 
           <div className="space-y-2">
             <label htmlFor="password" className="text-sm font-medium text-gray-700">
-              Password
+              Password <span className="text-red-500">*</span>
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -66,13 +101,24 @@ const AdminLoginForm = () => {
               </div>
               <input
                 id="password"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-black"
+                className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-black"
                 placeholder="Enter your password"
                 required
               />
+              <button
+                type="button"
+                onClick={togglePasswordVisibility}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none"
+              >
+                {showPassword ? (
+                  <EyeOff className="h-5 w-5" />
+                ) : (
+                  <Eye className="h-5 w-5" />
+                )}
+              </button>
             </div>
           </div>
         </div>
@@ -85,8 +131,10 @@ const AdminLoginForm = () => {
 
         <button
           type="submit"
-          disabled={isLoading}
-          className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-white font-medium rounded-lg transition-all duration-200 ease-in-out transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={!isFormValid || isLoading}
+          className={`w-full py-3 px-4 bg-blue-600 text-white font-medium rounded-lg transition-all duration-200 ease-in-out transform ${
+            isFormValid ? 'hover:bg-blue-700 hover:scale-[1.02]' : 'opacity-50 cursor-not-allowed'
+          } focus:ring-2 focus:ring-blue-500 focus:ring-offset-2`}
         >
           {isLoading ? (
             <div className="flex items-center justify-center">
