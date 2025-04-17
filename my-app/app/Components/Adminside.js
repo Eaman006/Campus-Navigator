@@ -67,8 +67,8 @@ const Adminside = () => {
       </button>
       </div>
       </Link>
-      <Link href="/cpanel/room">
-      <div className={`my-3 mx-2 px-2 hover:bg-gray-200 rounded-md py-2 ${getActivePath("/cpanel/room")}` }>
+      <Link href="/cpanel/user_event">
+      <div className={`my-3 mx-2 px-2 hover:bg-gray-200 rounded-md py-2 ${getActivePath("/cpanel/user_event")}` }>
         <button className='flex gap-2 text-lg cursor-pointer items-center'>
         <MdRoomPreferences size={24} />
           <span className={`${!isExpanded && 'hidden'}`}>Registered Events</span>

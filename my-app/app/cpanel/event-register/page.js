@@ -42,6 +42,14 @@ const Page = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Format the date and time properly
+    const formatDateTime = (date, time) => {
+      const [hours, minutes] = time.split(':');
+      const dateObj = new Date(date);
+      dateObj.setHours(parseInt(hours), parseInt(minutes), 0);
+      return dateObj.toISOString();
+    };
+
     const eventData = {
       title: formData.title,
       description: formData.description,
@@ -49,8 +57,8 @@ const Page = () => {
       time: formData.time,
       capacity: parseInt(formData.capacity),
       location: formData.location,
-      start_time: `${formData.date}T${formData.start_time}:00`,
-      end_time: `${formData.date}T${formData.end_time}:00`
+      start_time: formatDateTime(formData.date, formData.start_time),
+      end_time: formatDateTime(formData.date, formData.end_time)
     };
 
     try {
