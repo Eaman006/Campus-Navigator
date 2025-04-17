@@ -1,11 +1,18 @@
 "use client"
 import React, { useState, useEffect } from 'react';
-import { Trash2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { auth } from "@/lib/firebase";
+import { onAuthStateChanged } from "firebase/auth";
+import { Trash2 } from "lucide-react";
 
-const Page = () => {
+function Page() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [attendees, setAttendees] = useState([]);
+  const [isLoadingAttendees, setIsLoadingAttendees] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     fetchEvents();
@@ -42,6 +49,41 @@ const Page = () => {
       setError(error.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Function to fetch attendees for a specific event
+  const fetchAttendees = async (eventId) => {
+    setIsLoadingAttendees(true);
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('Authentication token not found. Please login again.');
+      }
+
+      const response = await fetch(`http://localhost:5000/user/events/${eventId}/attendees`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          localStorage.removeItem('token');
+          throw new Error('Session expired. Please login again.');
+        }
+        throw new Error('Failed to fetch attendees');
+      }
+
+      const data = await response.json();
+      setAttendees(data);
+      setSelectedEvent(eventId);
+    } catch (error) {
+      console.error('Error fetching attendees:', error);
+      alert(error.message);
+    } finally {
+      setIsLoadingAttendees(false);
     }
   };
 
@@ -123,26 +165,66 @@ const Page = () => {
               >
                 <Trash2 size={20} />
               </button>
-              <h2 className="text-xl font-semibold mb-2 pr-8">{event.title}</h2>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-gray-600">Date: {event.date}</p>
-                  <p className="text-gray-600">Time: {event.time}</p>
-                  <p className="text-gray-600">Location: {event.location}</p>
+              <div 
+                className="cursor-pointer"
+                onClick={() => fetchAttendees(event.id)}
+              >
+                <h2 className="text-xl font-semibold mb-2 pr-8">{event.title}</h2>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-gray-600">Date: {event.date}</p>
+                    <p className="text-gray-600">Time: {event.time}</p>
+                    <p className="text-gray-600">Location: {event.location}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-600">Capacity: {event.capacity}</p>
+                    <p className="text-gray-600">Start Time: {event.start_time}</p>
+                    <p className="text-gray-600">End Time: {event.end_time}</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-gray-600">Capacity: {event.capacity}</p>
-                  <p className="text-gray-600">Start Time: {event.start_time}</p>
-                  <p className="text-gray-600">End Time: {event.end_time}</p>
-                </div>
+                <p className="mt-2 text-gray-700">{event.description}</p>
               </div>
-              <p className="mt-2 text-gray-700">{event.description}</p>
+
+              {/* Attendees Section */}
+              {selectedEvent === event.id && (
+                <div className="mt-4 border-t pt-4">
+                  <h3 className="font-semibold mb-2">Attendees</h3>
+                  {isLoadingAttendees ? (
+                    <div className="flex justify-center">
+                      <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-blue-500"></div>
+                    </div>
+                  ) : attendees.length > 0 ? (
+                    <div className="overflow-x-auto">
+                      <table className="min-w-full">
+                        <thead>
+                          <tr>
+                            <th className="py-2 px-4 border-b text-left">Name</th>
+                            <th className="py-2 px-4 border-b text-left">Email</th>
+                            <th className="py-2 px-4 border-b text-left">Registration Date</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {attendees.map((attendee, index) => (
+                            <tr key={index} className="hover:bg-gray-50">
+                              <td className="py-2 px-4 border-b">{attendee.attendee_name}</td>
+                              <td className="py-2 px-4 border-b">{attendee.attendee_email}</td>
+                              <td className="py-2 px-4 border-b">{new Date(attendee.registration_date).toLocaleDateString()}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  ) : (
+                    <p className="text-gray-500">No attendees found for this event.</p>
+                  )}
+                </div>
+              )}
             </div>
           ))}
         </div>
       )}
     </div>
   );
-};
+}
 
 export default Page;
