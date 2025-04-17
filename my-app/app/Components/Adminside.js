@@ -27,7 +27,7 @@ const Adminside = () => {
   };
 
   return (
-    <div className={`text-black shadow-blue-300 shadow-xl transition-all duration-300 bg-white ${isExpanded ? 'w-1/5' : 'w-16'} absolute h-[92.5vh]`}>
+    <div className={`text-black shadow-blue-300 shadow-xl transition-all duration-300 bg-white ${isExpanded ? 'w-1/5' : 'w-16'} fixed h-[92.5vh]`}>
       <div className='flex gap-10 p-5 font-bold text-2xl justify-between'>
         <div className={`${!isExpanded && 'hidden'}`}>Menu</div>
         <MdOutlineMenu 
@@ -71,7 +71,7 @@ const Adminside = () => {
       <div className={`my-3 mx-2 px-2 hover:bg-gray-200 rounded-md py-2 ${getActivePath("/cpanel/room")}` }>
         <button className='flex gap-2 text-lg cursor-pointer items-center'>
         <MdRoomPreferences size={24} />
-          <span className={`${!isExpanded && 'hidden'}`}>Room Availability</span>
+          <span className={`${!isExpanded && 'hidden'}`}>Registered Events</span>
         </button>
       </div>
       </Link>

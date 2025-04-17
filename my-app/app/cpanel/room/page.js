@@ -4,7 +4,7 @@ const page = () => {
   return (
     <div className=' text-black pl-20'>
       <div className='font-bold text-center text-xl m-2'>
-        Check Room Availability
+        Check your registered events
       </div>
       
     </div>

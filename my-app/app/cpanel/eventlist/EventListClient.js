@@ -22,7 +22,7 @@ const EventListClient = () => {
   }, []);
 
   return (
-    <div className='text-black pl-20'>
+    <div className='text-black pl-20 h-[92vh] overflow-scroll'>
       <div className='font-bold text-center text-xl m-2'>
         Event List
       </div>

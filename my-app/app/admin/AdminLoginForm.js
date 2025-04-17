@@ -37,14 +37,24 @@ const AdminLoginForm = () => {
       });
 
       const data = await response.json();
+      console.log('Server Response:', data);
 
       if (!response.ok) {
         throw new Error(data.message || 'Login failed');
       }
 
+      // Store the JWT token in localStorage
+      if (data.access_token) {
+        localStorage.setItem('token', data.access_token);
+        console.log('Token stored in localStorage:', data.access_token);
+      } else {
+        throw new Error('No access token received from server');
+      }
+
       // If login is successful, redirect to admin dashboard
       router.push('/cpanel');
     } catch (error) {
+      console.error('Login Error:', error);
       setError(error.message || 'An error occurred during login');
     } finally {
       setIsLoading(false);

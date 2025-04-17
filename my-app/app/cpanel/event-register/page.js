@@ -3,13 +3,14 @@ import React, { useState } from 'react'
 
 const Page = () => {
   const [formData, setFormData] = useState({
-    eventName: "",
-    eventDate: "",
-    eventStartTime: "",
-    eventEndTime: "",
-    venueBuilding: "",
-    venueRoom: "",
-    coordinatorName: ""
+    title: "",
+    description: "",
+    date: "",
+    time: "",
+    capacity: "",
+    location: "",
+    start_time: "",
+    end_time: ""
   });
 
   const isFormValid = () => {
@@ -27,13 +28,14 @@ const Page = () => {
   const handleReset = (e) => {
     e.preventDefault();
     setFormData({
-      eventName: "",
-      eventDate: "",
-      eventStartTime: "",
-      eventEndTime: "",
-      venueBuilding: "",
-      venueRoom: "",
-      coordinatorName: ""
+      title: "",
+      description: "",
+      date: "",
+      time: "",
+      capacity: "",
+      location: "",
+      start_time: "",
+      end_time: ""
     });
   };
 
@@ -41,19 +43,27 @@ const Page = () => {
     e.preventDefault();
 
     const eventData = {
-      title: formData.eventName,
-      date: formData.eventDate,
-      time: formData.eventStartTime,
-      location: formData.venueBuilding,
-      capacity: parseInt(formData.venueRoom),
-      description: formData.coordinatorName
+      title: formData.title,
+      description: formData.description,
+      date: formData.date,
+      time: formData.time,
+      capacity: parseInt(formData.capacity),
+      location: formData.location,
+      start_time: `${formData.date}T${formData.start_time}:00`,
+      end_time: `${formData.date}T${formData.end_time}:00`
     };
 
     try {
-      const response = await fetch("https://project-expo-group-90-production.up.railway.app/events", {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('Authentication token not found. Please login again.');
+      }
+
+      const response = await fetch("http://localhost:5000/user/events/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
         },
         body: JSON.stringify(eventData)
       });
@@ -64,12 +74,17 @@ const Page = () => {
         alert("Event successfully submitted!");
         handleReset(e); // Reset form after successful submission
       } else {
+        if (response.status === 401) {
+          // Token expired or invalid
+          localStorage.removeItem('token');
+          throw new Error('Session expired. Please login again.');
+        }
         console.error("Failed to submit event:", response.statusText);
         alert("Failed to submit event. Please try again.");
       }
     } catch (error) {
       console.error("Error occurred while submitting event:", error);
-      alert("Error occurred while submitting event. Please try again.");
+      alert(error.message || "Error occurred while submitting event. Please try again.");
     }
   };
 
@@ -79,13 +94,24 @@ const Page = () => {
         <form className='m-3 p-3' onSubmit={handleSubmit}>
           <div className='text-center mb-4 font-bold text-xl'>Event Details</div>
 
-          <div className='mx-2'>Event Name <span className="text-red-500">*</span></div>
+          <div className='mx-2'>Event Title <span className="text-red-500">*</span></div>
           <input 
             type="text" 
-            name="eventName" 
-            value={formData.eventName}
+            name="title" 
+            value={formData.title}
             onChange={handleChange}
-            placeholder='Enter the event name' 
+            placeholder='Enter the event title' 
+            className="ml-2 mb-4 p-2 border border-gray-300 rounded-lg w-1/3"
+            required
+          />
+
+          <div className='mx-2'>Event Description <span className="text-red-500">*</span></div>
+          <input 
+            type="text" 
+            name="description" 
+            value={formData.description}
+            onChange={handleChange}
+            placeholder='Enter event description' 
             className="ml-2 mb-4 p-2 border border-gray-300 rounded-lg w-1/3"
             required
           />
@@ -93,66 +119,61 @@ const Page = () => {
           <div className='mx-2'>Event Date <span className="text-red-500">*</span></div>
           <input 
             type="date" 
-            name="eventDate" 
-            value={formData.eventDate}
+            name="date" 
+            value={formData.date}
             onChange={handleChange}
             className="ml-2 mb-4 p-2 border border-gray-300 rounded-lg w-1/3"
             required
           />
 
-          <div className='mx-2'>Event Start Time <span className="text-red-500">*</span></div>
+          <div className='mx-2'>Event Time <span className="text-red-500">*</span></div>
           <input 
             type="time" 
-            name="eventStartTime" 
-            value={formData.eventStartTime}
+            name="time" 
+            value={formData.time}
             onChange={handleChange}
             className="ml-2 mb-4 p-2 border border-gray-300 rounded-lg w-1/3"
             required
           />
 
-          <div className='mx-2'>Event End Time <span className="text-red-500">*</span></div>
+          <div className='mx-2'>Capacity <span className="text-red-500">*</span></div>
+          <input 
+            type="number" 
+            name="capacity" 
+            value={formData.capacity}
+            onChange={handleChange}
+            placeholder='Enter event capacity' 
+            className="ml-2 mb-4 p-2 border border-gray-300 rounded-lg w-1/3"
+            required
+          />
+
+          <div className='mx-2'>Location <span className="text-red-500">*</span></div>
+          <input 
+            type="text" 
+            name="location" 
+            value={formData.location}
+            onChange={handleChange}
+            placeholder='Enter event location' 
+            className="ml-2 mb-4 p-2 border border-gray-300 rounded-lg w-1/3"
+            required
+          />
+
+          <div className='mx-2'>Start Time <span className="text-red-500">*</span></div>
           <input 
             type="time" 
-            name="eventEndTime" 
-            value={formData.eventEndTime}
+            name="start_time" 
+            value={formData.start_time}
             onChange={handleChange}
             className="ml-2 mb-4 p-2 border border-gray-300 rounded-lg w-1/3"
             required
           />
 
-          <div className='mx-2'>Venue Building <span className="text-red-500">*</span></div>
-          <select
-            name="venueBuilding"
-            value={formData.venueBuilding}
-            onChange={handleChange}
-            className="ml-2 mb-4 p-2 border border-gray-300 rounded-lg w-1/3"
-            required
-          >
-            <option value="">Select a building</option>
-            <option value="Academic Block 1">Academic Block 1</option>
-            <option value="Academic Block 2">Academic Block 2</option>
-            <option value="Architecture Building">Architecture Building</option>
-            <option value="Lab Complex">Lab Complex</option>
-          </select>
-          
-          <div className='mx-2'>Venue Room <span className="text-red-500">*</span></div>
+          <div className='mx-2'>End Time <span className="text-red-500">*</span></div>
           <input 
-            type="text" 
-            name="venueRoom"
-            value={formData.venueRoom}
+            type="time" 
+            name="end_time" 
+            value={formData.end_time}
             onChange={handleChange}
-            placeholder='Enter room number' 
-            className="ml-2 mb-4 p-2 border border-gray-300 rounded-lg w-1/3"
-            required
-          />
-          
-          <div className='mx-2'>Coordinator Name <span className="text-red-500">*</span></div>
-          <input 
-            type="text" 
-            name="coordinatorName"
-            value={formData.coordinatorName}
-            onChange={handleChange}
-            placeholder='Enter Teacher Coordinator Name' 
             className="ml-2 mb-4 p-2 border border-gray-300 rounded-lg w-1/3"
             required
           />
