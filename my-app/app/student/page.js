@@ -149,70 +149,6 @@ function Page() {
     }
   }
 
-
-  // // Function to handle API request
-  // const handleSearch = async () => {
-  //   setStartFloorMap('')
-  //   setEndFloorMap('')
-
-  //   if (!start || !end) {
-  //     alert("Please enter both start and end floors.");
-  //     return;
-  //   }
-
-  //   setLoading(true);
-
-  //   try {
-  //     const response = await fetch("http://127.0.0.1:5000/process_path", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({
-  //         start,
-  //         end,
-  //         preference: preferenceRef.current.value,
-  //         building: "AB-01",
-  //       }),
-  //     });
-
-  //     if (response.ok) {
-  //       const contentType = response.headers.get("Content-Type");
-
-  //       if (contentType.includes("application/json")) {
-  //         // Complex Path - JSON Response
-  //         const data = await response.json();
-  //         if (data.error) {
-  //           alert(data.error);
-  //           return;
-  //         }
-
-  //         setStartFloorMap(data.files.start_floor);
-  //         setEndFloorMap(data.files.end_floor);
-  //         setSvgData(null); // Reset SVG data
-  //       } else if (contentType.includes("image/svg+xml")) {
-  //         // Same Floor - SVG Response
-  //         const svgText = await response.text();
-  //         setSvgData(svgText); // Store the SVG text
-  //         setStartFloorMap(null);
-  //         setEndFloorMap(null);
-  //       } else {
-  //         console.error("Unexpected response format");
-  //       }
-  //     } else {
-  //       console.error("Error fetching path:", response.statusText);
-  //     }
-  //   } catch (error) {
-  //     console.error("Request failed:", error);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  //   if (mapRef.current) {
-  //     mapRef.current.style.display = 'block';
-  //     handleSearchClose();
-  //   }
-  // };
-
   // Handle logout
   const handleLogout = async () => {
     try {
@@ -310,7 +246,6 @@ function Page() {
       <div className={style['container']}>
 
         <ShowPath buttonRef={buttonRef}/>
-
 
         <div className={style['container-left']}>
           <div className={style['container-left-top']}>
