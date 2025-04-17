@@ -3,18 +3,26 @@ import React, { useRef, useState } from 'react'
 import style from '@/app/student/Student.module.css'
 import Image from 'next/image';
 
-function ShowPath({buttonRef}) {
+function ShowPath({ buttonRef }) {
 
     const preferenceRef = useRef('Stairs');
 
     const [startFloorMap, setStartFloorMap] = useState("");
     const [endFloorMap, setEndFloorMap] = useState("");
+    const [startFloorMapBuilding2, setStartFloorMapBuilding2] = useState("")
+    const [endFloorMapBuilding2, setEndFloorMapBuilding2] = useState("")
+    const [showBuilding1Maps, setShowBuilding1Maps] = useState(true);
     const [loading, setLoading] = useState(false);
     const [showStartMap, setShowStartMap] = useState(true);
     const [start, setStart] = useState("");
     const [end, setEnd] = useState("");
     const [svgData, setSvgData] = useState(null);
     const mapRef = useRef(null);
+
+    const [navType, setNavType] = useState(""); // "single" or "multi"
+    const [building1, setBuilding1] = useState("");
+    const [building2, setBuilding2] = useState("");
+
 
     // Function to handle API request
     const handleSearch = async () => {
@@ -79,11 +87,51 @@ function ShowPath({buttonRef}) {
         }
     };
 
+    const handleSearchMulti = async () => {
+        try {
+            const response = await fetch("http://127.0.0.1:5000/multi_building_process_path", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    "Start Location": start,
+                    "End Location": end,
+                    "building_name_1": building1,
+                    "building_name_2": building2
+                }),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+
+                setStartFloorMap(data.files[building1].start_floor);
+                setEndFloorMap(data.files[building1].end_floor);
+
+                setStartFloorMapBuilding2(data.files[building2].start_floor);
+                setEndFloorMapBuilding2(data.files[building2].end_floor);
+
+            } else {
+                console.error("Error fetching path:", response.statusText);
+            }
+        } catch (error) {
+            console.error("Request failed:", error);
+        } finally {
+            setLoading(false);
+        }
+        if (mapRef.current) {
+            mapRef.current.style.display = 'block';
+            handleSearchClose();
+        }
+    }
 
 
-    const swapFloors = () => {
-        setStart(end);
-        setEnd(start);
+
+    const swapBuilding = () => {
+        if(navType=='single'){
+            return
+        }
+        setShowBuilding1Maps(prev => !prev);
     };
 
 
@@ -93,18 +141,16 @@ function ShowPath({buttonRef}) {
             buttonRef.current.style.display = "none";
         }
     }
-      const toggleMap = () => {
-        setShowStartMap((prev) => !prev);
-      };
-    
-      const handleMapClose = () => {
+
+
+    const handleMapClose = () => {
         if (mapRef.current) {
-          mapRef.current.style.display = 'none';
+            mapRef.current.style.display = 'none';
         }
         setEndFloorMap('')
         setStartFloorMap('')
         setSvgData('')
-      }
+    }
 
     return (
         <div>
@@ -115,51 +161,72 @@ function ShowPath({buttonRef}) {
                 </div>
 
                 {/* Input Section */}
-                <div className="flex items-center gap-4">
-                    {/* Left Icons */}
-                    <div className="flex flex-col items-center gap-2">
-                        <Image src="/start.png" alt="Start" width={20} height={20} />
-                        <div className="h-6 border-l border-gray-400"></div>
-                        <Image src="/destination.png" alt="End" width={20} height={20} />
-                    </div>
+                <select
+                    className="border p-2 rounded-md w-full text-black mb-2"
+                    value={navType}
+                    onChange={(e) => setNavType(e.target.value)}
+                >
+                    <option value="" disabled>Select navigation type</option>
+                    <option value="single">Same Building</option>
+                    <option value="multi">Multi-Building</option>
+                </select>
 
-                    {/* Input Fields */}
-                    <div className="flex flex-col flex-grow">
+                {/* Common Inputs */}
+                <input
+                    type="text"
+                    placeholder="Choose starting location"
+                    className="border p-2 rounded-md w-full"
+                    value={start}
+                    onChange={(e) => setStart(e.target.value)}
+                />
+                <input
+                    type="text"
+                    placeholder="Choose end location"
+                    className="border mt-2 p-2 rounded-md w-full mb-2"
+                    value={end}
+                    onChange={(e) => setEnd(e.target.value)}
+                />
 
-                        <input
-                            type="text"
-                            placeholder="Choose starting floor"
-                            className="border p-2 rounded-md w-full"
-                            value={start}
-                            onChange={(e) => setStart(e.target.value)}
-                        />
-                        <input
-                            type="text"
-                            placeholder="Choose end floor"
-                            className="border mt-2 p-2 rounded-md w-full"
-                            value={end}
-                            onChange={(e) => setEnd(e.target.value)}
-                        />
+                {/* Conditional Building Inputs for Multi-Building */}
+                {navType === "multi" && (
+                    <>
+
                         <select
-                            type="text"
-                            placeholder="Choose end floor"
-                            className="border mt-2 p-2 rounded-md w-full text-black"
-                            ref={preferenceRef}
+                            className="border p-2 rounded-md w-full text-black mb-2"
+                            value={building1}
+                            onChange={(e) => setBuilding1(e.target.value)}
                         >
-                            <option value="Stairs" hidden defaultChecked>select preference</option>
-                            <option value="Stairs">Stairs</option>
-                            <option value="Lift">Lift</option>
+                            <option value="" disabled>Building Name 1</option>
+                            <option value="AB-01">AB-01</option>
+                            <option value="Lab-Complex">Lab-Complex</option>
                         </select>
-                    </div>
+                        <select
+                            className="border p-2 rounded-md w-full text-black mb-2"
+                            value={building2}
+                            onChange={(e) => setBuilding2(e.target.value)}
+                        >
+                            <option value="" disabled>Building Name 2</option>
+                            <option value="AB-01">AB-01</option>
+                            <option value="Lab-Complex">Lab-Complex</option>
+                        </select>
 
-                    {/* Swap Button */}
-                    <button onClick={swapFloors} className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 cursor-pointer">
-                        <Image src="/Swap.png" alt="Swap" width={20} height={20} />
-                    </button>
-                </div>
+                    </>
+                )}
+
+                {/* Preference Selector */}
+                {navType == 'single' && <select
+                    type="text"
+                    className="border mt-2 p-2 rounded-md w-full text-black"
+                    ref={preferenceRef}
+                >
+                    <option value="Stairs" hidden defaultChecked>select preference</option>
+                    <option value="Stairs">Stairs</option>
+                    <option value="Lift">Lift</option>
+                </select>}
+
                 {/* Search Button */}
                 <button
-                    onClick={handleSearch}
+                    onClick={(navType == 'single' ? (handleSearch) : (handleSearchMulti))}
                     className="bg-blue-500 text-white p-3 rounded-md w-full mt-4 cursor-pointer"
                     disabled={loading}
                 >
@@ -172,7 +239,7 @@ function ShowPath({buttonRef}) {
                 <div ref={mapRef} className="relative hidden bg-white rounded-lg border-3">
                     <div className='flex justify-between items-center w-[100%] p-4 h-[50px]' style={{ borderBottom: '3px solid #000' }}>
                         <button
-                            onClick={toggleMap}
+                            onClick={swapBuilding}
                             className=" p-2 rounded-md z-10 cursor-pointer"
                         >
                             <Image src='/prev.png' width={25} height={25} alt='previous' style={{ transform: 'rotate(180deg)' }} />
@@ -182,8 +249,8 @@ function ShowPath({buttonRef}) {
                         {/* Swap Button Inside iFrame */}
                         <div className='flex items-center'>
                             <button
-                                onClick={toggleMap}
                                 className=" p-2 rounded-md z-10 cursor-pointer"
+                                onClick={swapBuilding}
                             >
                                 <Image src='/next.png' width={25} height={25} alt='next' />
                             </button>
@@ -207,9 +274,10 @@ function ShowPath({buttonRef}) {
                             ) : (
                                 // For different floor
                                 <iframe
-                                    src={`http://127.0.0.1:5000${startFloorMap}`}
+                                    src={`http://127.0.0.1:5000${showBuilding1Maps ? startFloorMap : startFloorMapBuilding2}`}
                                     className="w-[400px] h-[400px]"
                                 />
+
                             )}
                         </div>
 
@@ -220,9 +288,10 @@ function ShowPath({buttonRef}) {
                                 <>
                                     <h1 style={{ borderBottom: '3px solid #000' }} className='text-center font-bold text-xl'>End Location</h1>
                                     <iframe
-                                        src={`http://127.0.0.1:5000${endFloorMap}`}
+                                        src={`http://127.0.0.1:5000${showBuilding1Maps ? endFloorMap : endFloorMapBuilding2}`}
                                         className="w-[400px] h-[400px]"
                                     />
+
                                 </>
                             )}
 
