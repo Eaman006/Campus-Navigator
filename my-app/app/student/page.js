@@ -41,6 +41,12 @@ function Page() {
   const [isLoadingEvents, setIsLoadingEvents] = useState(false);
   const [registeredEvents, setRegisteredEvents] = useState(new Set());
   const buttonRef = useRef(null);
+  const [showRegistrationForm, setShowRegistrationForm] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [registrationForm, setRegistrationForm] = useState({
+    attendee_name: '',
+    attendee_email: ''
+  });
 
   // Effect for authentication and initialization
   useEffect(() => {
@@ -246,21 +252,40 @@ function Page() {
     setIsHomeSelected(true);
   };
 
+  // Function to handle registration form input changes
+  const handleRegistrationInputChange = (e) => {
+    const { name, value } = e.target;
+    setRegistrationForm(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
   // Function to handle event registration
-  const handleRegister = async (eventId) => {
+  const handleRegister = async (event) => {
+    setSelectedEvent(event);
+    setShowRegistrationForm(true);
+  };
+
+  // Function to submit registration
+  const handleRegistrationSubmit = async (e) => {
+    e.preventDefault();
     try {
-      const response = await fetch(`http://localhost:5000/events/register/${eventId}`, {
+      const response = await fetch(`http://localhost:5000/events/${selectedEvent.id}/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          userId: auth.currentUser?.uid,
-        }),
+        body: JSON.stringify(registrationForm),
       });
 
       if (response.ok) {
-        setRegisteredEvents(prev => new Set([...prev, eventId]));
+        setRegisteredEvents(prev => new Set([...prev, selectedEvent.id]));
+        setShowRegistrationForm(false);
+        setRegistrationForm({
+          attendee_name: '',
+          attendee_email: ''
+        });
       } else {
         throw new Error('Registration failed');
       }
@@ -542,6 +567,7 @@ function Page() {
                       <div key={index} className="bg-white p-4 rounded-lg shadow-md">
                         <h3 className="font-bold text-lg">{event.title}</h3>
                         <p className="text-gray-600">Date: {event.date}</p>
+                        <p className="text-gray-600">Time: {event.time}</p>
                         <p className="text-gray-600">Location: {event.location}</p>
                         {event.description && (
                           <p className="text-gray-600 mt-2">{event.description}</p>
@@ -555,8 +581,8 @@ function Page() {
                               Registered
                             </button>
                           ) : (
-                            <button
-                              onClick={() => handleRegister(event.id)}
+                            <button 
+                              onClick={() => handleRegister(event)}
                               className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors"
                             >
                               Register
@@ -569,6 +595,66 @@ function Page() {
                 ) : (
                   <div className="text-center text-gray-500 mt-8">
                     No upcoming events found
+                  </div>
+                )}
+
+                {/* Registration Form Modal */}
+                {showRegistrationForm && (
+                  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+                      <h2 className="text-xl font-bold mb-4">Register for {selectedEvent?.title}</h2>
+                      <form onSubmit={handleRegistrationSubmit}>
+                        <div className="mb-4">
+                          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="attendee_name">
+                            Full Name
+                          </label>
+                          <input
+                            type="text"
+                            id="attendee_name"
+                            name="attendee_name"
+                            value={registrationForm.attendee_name}
+                            onChange={handleRegistrationInputChange}
+                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            required
+                          />
+                        </div>
+                        <div className="mb-4">
+                          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="attendee_email">
+                            College Email
+                          </label>
+                          <input
+                            type="email"
+                            id="attendee_email"
+                            name="attendee_email"
+                            value={registrationForm.attendee_email}
+                            onChange={handleRegistrationInputChange}
+                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            required
+                          />
+                        </div>
+                        <div className="flex justify-end gap-2">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setShowRegistrationForm(false);
+                              setRegistrationForm({
+                                attendee_name: '',
+                                attendee_email: ''
+                              });
+                            }}
+                            className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition-colors"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="submit"
+                            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors"
+                          >
+                            Submit
+                          </button>
+                        </div>
+                      </form>
+                    </div>
                   </div>
                 )}
               </div>
