@@ -552,7 +552,6 @@ function Page() {
                 <span className={isHomeSelected ? 'text-blue-600' : ''}> Home</span>
               </div>
               <div className='w-full mt-4 cursor-pointer flex items-center' onClick={() => setShowEvents(!showEvents)}>
-                <span><Image src='/Events.png' width={30} height={30} alt='events' /></span>
                 <span className={showEvents ? 'text-blue-600' : ''}> Events</span>
               </div>
               <div className='relative'>
