@@ -54,7 +54,7 @@ const Chatbot = () => {
       formData.append("text", input)
 
       try {
-        const response = await fetch(`https://project-expo-group-90-production.up.railway.app/upload?text=${input}`,
+        const response = await fetch(`http://127.0.0.1:5000/upload?text=${input}`,
           {
             method: "POST",
             body: formData
@@ -101,7 +101,7 @@ const Chatbot = () => {
       // Sending request to backend for /chat route
       try {
         const response = await fetch(
-          "https://project-expo-group-90-production.up.railway.app/chat",
+          "http://127.0.0.1:5000/chat",
           {
             method: "POST",
             headers: {
@@ -234,8 +234,8 @@ const Chatbot = () => {
           ) : (
             // For different floor
             <iframe
-              src={`https://project-expo-group-90-production.up.railway.app/${showStartMap ? startFloorMap : endFloorMap}`}
-              className="w-150 h-150 border rounded-lg"
+              src={`http://127.0.0.1:5000${showStartMap ? startFloorMap : endFloorMap}`}
+              className="w-[500px] h-[500px] border rounded-lg"
             />
           )}
 
